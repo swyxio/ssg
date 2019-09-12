@@ -15,7 +15,9 @@
     "noUnusedLocals": true,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "strictPropertyInitialization": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "build", "scripts"]

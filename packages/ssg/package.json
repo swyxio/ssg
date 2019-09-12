@@ -1,0 +1,49 @@
+{
+  "name": "ssg",
+  "version": "0.0.3",
+  "license": "MIT",
+  "bin": {
+    "ssg": "./ssg"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "prepublishOnly": "git push && git push --tags && gh-release",
+    "version": "auto-changelog -p --template keepachangelog && git add CHANGELOG.md"
+  },
+  "files": [
+    "*.js",
+    "ssg",
+    "dist/*.js"
+  ],
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "chokidar": "^3.0.2",
+    "execa": "^2.0.4",
+    "kleur": "^3.0.3",
+    "pretty-bytes": "^5.3.0",
+    "sade": "^1.6.1",
+    "tree-kill": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.5",
+    "auto-changelog": "^1.16.1",
+    "gh-release": "^3.5.0",
+    "sapper": "^0.27.8",
+    "typescript": "^3.6.3"
+  },
+  "peerDependencies": {
+    "sapper": "^0.27.8"
+  },
+  "bugs": {
+    "url": "https://github.com/sw-yx/ssg/issues"
+  },
+  "keywords": [
+    "svelte",
+    "sapper",
+    "static-site",
+    "jamstack"
+  ],
+  "repository": "https://github.com/sw-yx/ssg.git",
+  "author": "sw-yx <swyx@dontemail.me>"
+}
