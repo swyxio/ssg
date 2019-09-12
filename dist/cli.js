@@ -17,25 +17,30 @@ const execa_1 = __importDefault(require("execa"));
 const chalk_1 = __importDefault(require("chalk"));
 const tree_kill_1 = __importDefault(require("tree-kill"));
 let svelteProcess;
+let isReady = false;
+const watchHandler = (event) => (path) => __awaiter(void 0, void 0, void 0, function* () {
+    // bypass the initial 'add' events
+    if (event === 'started')
+        isReady = true;
+    else if (!isReady)
+        return;
+    // main of the handler
+    if (svelteProcess) {
+        console.log(`${chalk_1.default.yellow.bold('SSG')}: ${chalk_1.default.blue('ssg.config.js')} changed. Reloading...`);
+        tree_kill_1.default(svelteProcess.pid); // need to tree-kill bc child of child
+    }
+    try {
+        svelteProcess = execa_1.default('sapper', ['dev', '--ext', '.svexy .svelte']);
+        yield svelteProcess.stdout.pipe(process.stdout);
+    }
+    catch (err) {
+        console.error(err);
+    }
+});
 // One-liner for current directory, ignores .dotfiles
 const watcher = chokidar_1.default.watch(['ssg.config.js', 'content']);
 watcher
-    .on('add', watchHandler)
-    .on('change', watchHandler)
+    .on('add', watchHandler('added'))
+    .on('change', watchHandler('changed'))
     .on('error', (error) => console.log(`Watcher error: ${error}`))
-    .on('ready', () => console.log('Initial scan complete. Ready for changes'));
-function watchHandler(path) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (svelteProcess) {
-            console.log(`${chalk_1.default.yellow.bold('SSG')}: ${chalk_1.default.blue('ssg.config.js')} changed. Reloading...`);
-            tree_kill_1.default(svelteProcess.pid); // need to tree-kill bc child of child
-        }
-        try {
-            svelteProcess = execa_1.default('sapper', ['dev', '--ext', '.svexy .svelte']);
-            yield svelteProcess.stdout.pipe(process.stdout);
-        }
-        catch (err) {
-            console.error(err);
-        }
-    });
-}
+    .on('ready', watchHandler('started'));
