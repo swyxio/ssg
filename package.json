@@ -1,7 +1,11 @@
 {
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
   "scripts": {
-    "build": "yarn workspace ssg build"
+    "build": "yarn workspace ssg build",
+    "pub": "cd packages/ssg && npm version patch && npm publish"
   }
 }

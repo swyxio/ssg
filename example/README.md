@@ -1,1 +1,0 @@
-example site for SSG

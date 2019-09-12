@@ -35,6 +35,7 @@ prog
   .option('--output', 'Sapper intermediate file output directory', 'src/node_modules/@sapper')
   .option('--build-dir', 'Development build directory', '__sapper__/dev')
   .option('--ext', 'Custom Route Extension', '.svelte .html')
+  .option('--ssgConfig', 'SSG config file', 'ssg.config.js')
   .action(
     async (opts: {
       port: number
@@ -50,10 +51,11 @@ prog
       output: string
       'build-dir': string
       ext: string
+      ssgConfig: string
     }) => {
       // @ts-ignore
       const { dev } = await import('sapper/api')
-      const { watchSSGFiles } = await import('./cli-ssg')
+      const { watchSSGFiles, readSSGConfig } = await import('./cli-ssg')
       try {
         const watcher = dev({
           cwd: opts.cwd,
@@ -72,7 +74,25 @@ prog
 
         let first = true
 
-        watchSSGFiles(watcher)
+        /**
+         *
+         * SSG SECTION
+         *
+         * verify ssg config exists
+         *
+         */
+        console.log('SSGDEBUG ssgconfig', opts.ssgConfig)
+        let ssgConfigPath = opts.ssgConfig || 'ssg.config.js'
+        const ssgConfig = readSSGConfig(ssgConfigPath)
+        // actually do stuff with it
+        watchSSGFiles(watcher, ssgConfig)
+
+        /**
+         *
+         * END SSG SECTION
+         *
+         *
+         */
 
         watcher.on('stdout', (data: TODO_ANY) => {
           process.stdout.write(data)
@@ -96,7 +116,7 @@ prog
         watcher.on('invalid', (event: InvalidEvent) => {
           event.changed = event.changed.filter(Boolean)
           if (event.changed.length < 1) {
-            console.log('debug SSG: ', event)
+            console.log('SSGDEBUG invalidevent', event)
             return
           }
           const changed = event.changed.map((filename: string) => path.relative(process.cwd(), filename)).join(', ')
