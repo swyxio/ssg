@@ -7,7 +7,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "prepublishOnly": "git push && git push --tags && gh-release",
+    "version": "auto-changelog -p --template keepachangelog && git add CHANGELOG.md"
   },
   "files": [
     "*.js",
@@ -16,9 +18,11 @@
   ],
   "devDependencies": {
     "@types/node": "^12.7.5",
+    "auto-changelog": "^1.16.1",
     "chalk": "^2.4.2",
     "chokidar": "^3.0.2",
     "execa": "^2.0.4",
+    "gh-release": "^3.5.0",
     "tree-kill": "^1.2.1",
     "typescript": "^3.6.3"
   },
