@@ -1,6 +1,8 @@
 # Sapper Site Generator
 
-a very experimental static site generator overlay on top of Sapper.
+a very experimental static site generator overlay on top of Sapper. For a simple demo see this:
+
+https://www.youtube.com/watch?v=o_o0PAts9Gg&feature=youtu.be
 
 ## What it expects
 
