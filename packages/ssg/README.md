@@ -4,6 +4,12 @@ a very experimental static site generator overlay on top of Sapper. For a simple
 
 https://www.youtube.com/watch?v=o_o0PAts9Gg&feature=youtu.be
 
+## Installation
+
+```bash
+yarn add sapper svelte ssg
+```
+
 ## What it expects
 
 1. you will have a `src/routes/data/[slug].json.js` file in your main Sapper project, that looks like this:
@@ -29,10 +35,10 @@ export async function get(req, res) {
 ```js
 exports.getData = async () => {
   // do whatever you want
-  return { 
-    index: [{title: 'foo', slug: 'foo'}, {title: 'bar', slug: 'bar'}], 
-    foo: {title: 'foo', html: '<div> the foo post </div>'},
-    bar: {title: 'bar', html: '<div> the bar post </div>'},
+  return {
+    index: [{ title: 'foo', slug: 'foo' }, { title: 'bar', slug: 'bar' }],
+    foo: { title: 'foo', html: '<div> the foo post </div>' },
+    bar: { title: 'bar', html: '<div> the bar post </div>' },
   }
 }
 ```

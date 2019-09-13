@@ -6,6 +6,7 @@
     "ssg": "./ssg"
   },
   "scripts": {
+    "postinstall": "yarn build",
     "build": "tsc",
     "watch": "tsc -w",
     "prepublishOnly": "git push && git push --tags && gh-release",

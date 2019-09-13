@@ -1,5 +1,6 @@
 import chokidar from 'chokidar'
 import fs from 'fs'
+import path from 'path'
 type SSGConfig = {
   contentFolder: string
   configPath: string
@@ -13,7 +14,7 @@ type SSGConfig = {
  */
 export function readSSGConfig(ssgConfigPath: string) {
   if (!fs.existsSync(ssgConfigPath)) throw new Error('ssgConfig file ' + ssgConfigPath + ' missing')
-  let ssgConfig = require(ssgConfigPath)
+  let ssgConfig = require(path.resolve(ssgConfigPath))
   ssgConfig.configPath = ssgConfigPath
   ssgConfig.contentFolder = ssgConfig.contentFolder || 'content'
   return ssgConfig
