@@ -55,6 +55,26 @@ exports.getInitialData = async () => {
 }
 ```
 
+In your templates, you may now query this data at any time:
+
+```html
+<!-- src/routes/talks/[slug].svelte -->
+<script context="module">
+  export async function preload({ params, query }) {
+    const res = await this.fetch(`data/talks___ssg___${params.slug}.json`)
+    const data = await res.json()
+    if (res.status === 200) {
+      return { post: data }
+    } else {
+      this.error(res.status, data.message)
+    }
+  }
+</script>
+```
+
+
 ## What it does
 
 Under the hood, `ssg` runs `sapper dev` for you, and watches and reloads it whenever you change your config or contents folder.
+
+It runs `getInitialData` once and saves that result to a cache, and then you can run `getData` anytime you want to query that cache.
