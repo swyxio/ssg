@@ -55,7 +55,6 @@ prog
     }) => {
       // @ts-ignore
       const { dev } = await import('sapper/api')
-      const { getSSGDataOnce, watchSSGFiles, readSSGConfig } = await import('./cli-ssg')
       try {
         const watcher = dev({
           cwd: opts.cwd,
@@ -81,13 +80,12 @@ prog
          * verify ssg config exists
          *
          */
-        console.log('SSGDEBUG ssgconfig', opts.ssgConfig)
+        const { getSSGDataOnce, watchSSGFiles, readSSGConfig } = await import('./cli-ssg')
         let ssgConfigPath = opts.ssgConfig || 'ssg.config.js'
         const ssgConfig = readSSGConfig(ssgConfigPath)
         // actually do stuff with it
         await getSSGDataOnce(ssgConfig)
         watchSSGFiles(watcher, ssgConfig)
-
         /**
          *
          * END SSG SECTION
@@ -280,6 +278,7 @@ prog
         'build-dir': string
         ext: string
         entry: string
+        ssgConfig: string // swyx
       },
     ) => {
       try {
@@ -301,6 +300,25 @@ prog
         // @ts-ignore
         const { export: _export } = await import('sapper/api')
         const { default: pb } = await import('pretty-bytes')
+
+        /**
+         *
+         * SSG SECTION
+         *
+         * verify ssg config exists
+         *
+         */
+        const { getSSGDataOnce, readSSGConfig } = await import('./cli-ssg')
+        let ssgConfigPath = opts.ssgConfig || 'ssg.config.js'
+        const ssgConfig = readSSGConfig(ssgConfigPath)
+        // actually do stuff with it
+        await getSSGDataOnce(ssgConfig)
+        /**
+         *
+         * END SSG SECTION
+         *
+         *
+         */
 
         await _export({
           cwd: opts.cwd,
