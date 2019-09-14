@@ -3,8 +3,25 @@ import fs from 'fs'
 import path from 'path'
 type SSGConfig = {
   contentFolder: string
+  ssgDotFolder: string
   configPath: string
-  getData(): Promise<{ [key: string]: any }>
+  getInitialData(): Promise<{ [key: string]: any }>
+}
+
+
+/**
+ *
+ * run getInitialData only once
+ *
+ */
+export async function getSSGDataOnce(ssgConfig: SSGConfig) {
+  if (ssgConfig.getInitialData) {
+    const data = await ssgConfig.getInitialData()
+    const dotFolderPath = path.join(path.resolve(ssgConfig.ssgDotFolder), '.ssg')
+    const dotFolderDataPath = path.join(dotFolderPath, 'data.json')
+    if (!fs.existsSync(dotFolderPath)) fs.mkdirSync(dotFolderPath)
+    fs.writeFileSync(dotFolderDataPath, data)
+  }
 }
 
 /**
@@ -12,10 +29,11 @@ type SSGConfig = {
  * read ssg config and ensure defaults exist
  *
  */
-export function readSSGConfig(ssgConfigPath: string) {
+export function readSSGConfig(ssgConfigPath: string): SSGConfig {
   if (!fs.existsSync(ssgConfigPath)) throw new Error('ssgConfig file ' + ssgConfigPath + ' missing')
   let ssgConfig = require(path.resolve(ssgConfigPath))
   ssgConfig.configPath = ssgConfigPath
+  ssgConfig.ssgDotFolder = ssgConfig.ssgDotFolder  || '.ssg'
   ssgConfig.contentFolder = ssgConfig.contentFolder || 'content'
   return ssgConfig
 }

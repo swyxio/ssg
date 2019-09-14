@@ -55,7 +55,7 @@ prog
     }) => {
       // @ts-ignore
       const { dev } = await import('sapper/api')
-      const { watchSSGFiles, readSSGConfig } = await import('./cli-ssg')
+      const { getSSGDataOnce, watchSSGFiles, readSSGConfig } = await import('./cli-ssg')
       try {
         const watcher = dev({
           cwd: opts.cwd,
@@ -85,6 +85,7 @@ prog
         let ssgConfigPath = opts.ssgConfig || 'ssg.config.js'
         const ssgConfig = readSSGConfig(ssgConfigPath)
         // actually do stuff with it
+        await getSSGDataOnce(ssgConfig)
         watchSSGFiles(watcher, ssgConfig)
 
         /**
