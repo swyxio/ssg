@@ -17,10 +17,10 @@ type SSGConfig = {
 export async function getSSGDataOnce(ssgConfig: SSGConfig) {
   if (ssgConfig.getInitialData) {
     const data = await ssgConfig.getInitialData()
-    const dotFolderPath = path.join(path.resolve(ssgConfig.ssgDotFolder), '.ssg')
+    const dotFolderPath = path.resolve(ssgConfig.ssgDotFolder)
     const dotFolderDataPath = path.join(dotFolderPath, 'data.json')
     if (!fs.existsSync(dotFolderPath)) fs.mkdirSync(dotFolderPath)
-    fs.writeFileSync(dotFolderDataPath, data)
+    fs.writeFileSync(dotFolderDataPath, JSON.stringify(data))
   }
 }
 
