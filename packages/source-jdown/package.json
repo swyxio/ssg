@@ -1,5 +1,5 @@
 {
-  "name": "@ssgjs/source-yaml",
+  "name": "@ssgjs/source-jdown",
   "version": "0.0.1",
   "main": "dist/index.js",
   "license": "MIT",
@@ -8,6 +8,7 @@
     "url": "git+https://github.com/sw-yx/ssg.git"
   },
   "dependencies": {
+    "jdown": "^1.0.2",
     "js-yaml": "^3.13.1",
     "slugify": "^1.3.5"
   },
@@ -21,7 +22,7 @@
     "url": "https://github.com/sw-yx/ssg/issues"
   },
   "homepage": "https://github.com/sw-yx/ssg#readme",
-  "description": "ssgjs helper for pulling from yaml files",
+  "description": "ssgjs helper for pulling from folders of markdown files",
   "keywords": [
     "svelte"
   ],

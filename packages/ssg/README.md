@@ -19,10 +19,13 @@ const { getData } = require('../../../ssg.config')
 
 export async function get(req, res) {
   const { slug } = req.params
-  const data = await getData()
-  if (data[slug]) {
+  const splitSlug = slug.split('___ssg___')
+  const category = splitSlug[0]
+  const realSlug = splitSlug[1]
+  const data = await getData(category, realSlug)
+  if (data) {
     res.writeHead(200, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify(data[slug]))
+    res.end(JSON.stringify(data))
   } else {
     res.writeHead(404, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ message: `Not found` }))
@@ -30,11 +33,20 @@ export async function get(req, res) {
 }
 ```
 
-2. You should have a `ssg.config.js` that exports a `getData` function that provides this data:
+2. You should have a `ssg.config.js` that exports a `getInitialData` (run once) and `getData` (run each time) function that provides this data:
 
 ```js
-exports.getData = async () => {
-  // do whatever you want
+exports.getData = async (category, slug) => {
+  // read cache and 
+  // do less expensive subsequent fetches
+  const data = require(path.resolve('.ssg/data.json'))
+  const result = data[category][slug]
+  if (typeof result === 'undefined') throw new Error('no data found for ' + slug)
+  return result
+}
+
+exports.getInitialData = async () => {
+  // do expensive initial fetches and cache them in .ssg/data.json
   return {
     index: [{ title: 'foo', slug: 'foo' }, { title: 'bar', slug: 'bar' }],
     foo: { title: 'foo', html: '<div> the foo post </div>' },
