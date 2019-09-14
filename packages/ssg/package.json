@@ -1,13 +1,12 @@
 {
   "name": "ssg",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "license": "MIT",
   "bin": {
     "ssg": "./ssg"
   },
   "scripts": {
-    "postinstall": "yarn build",
-    "build": "tsc",
+    "build": "tsc || true # in case tsc not installed",
     "watch": "tsc -w",
     "prepublishOnly": "git push && git push --tags && gh-release",
     "version": "auto-changelog -p --template keepachangelog && git add CHANGELOG.md"
