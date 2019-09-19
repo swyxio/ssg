@@ -5,9 +5,8 @@ type SSGConfig = {
   contentFolder: string
   ssgDotFolder: string
   configPath: string
-  getInitialData(): Promise<{ [key: string]: any }>
+  createIndex(): Promise<{ [key: string]: any }>
 }
-
 
 /**
  *
@@ -15,12 +14,14 @@ type SSGConfig = {
  *
  */
 export async function getSSGDataOnce(ssgConfig: SSGConfig) {
-  if (ssgConfig.getInitialData) {
-    const data = await ssgConfig.getInitialData()
+  if (ssgConfig.createIndex) {
+    const mainIndex = await ssgConfig.createIndex()
     const dotFolderPath = path.resolve(ssgConfig.ssgDotFolder)
     const dotFolderDataPath = path.join(dotFolderPath, 'data.json')
     if (!fs.existsSync(dotFolderPath)) fs.mkdirSync(dotFolderPath)
-    fs.writeFileSync(dotFolderDataPath, JSON.stringify(data))
+    fs.writeFileSync(dotFolderDataPath, JSON.stringify(mainIndex))
+  } else {
+    console.warn('ssg warning: no createIndex in ssg.config.js detected, continuing as sapper app')
   }
 }
 
@@ -33,7 +34,7 @@ export function readSSGConfig(ssgConfigPath: string): SSGConfig {
   if (!fs.existsSync(ssgConfigPath)) throw new Error('ssgConfig file ' + ssgConfigPath + ' missing')
   let ssgConfig = require(path.resolve(ssgConfigPath))
   ssgConfig.configPath = ssgConfigPath
-  ssgConfig.ssgDotFolder = ssgConfig.ssgDotFolder  || '.ssg'
+  ssgConfig.ssgDotFolder = ssgConfig.ssgDotFolder || '.ssg'
   ssgConfig.contentFolder = ssgConfig.contentFolder || 'content'
   return ssgConfig
 }

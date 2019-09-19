@@ -1,10 +1,11 @@
 {
   "name": "ssg",
-  "version": "0.0.13",
+  "version": "0.0.15",
   "license": "MIT",
   "bin": {
     "ssg": "./ssg"
   },
+  "main": "dist/cli-ssg.js",
   "scripts": {
     "build": "tsc || true # in case tsc not installed",
     "watch": "tsc -w",

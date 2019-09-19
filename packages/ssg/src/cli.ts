@@ -115,7 +115,7 @@ prog
         watcher.on('invalid', (event: InvalidEvent) => {
           event.changed = event.changed.filter(Boolean)
           if (event.changed.length < 1) {
-            console.log('SSGDEBUG invalidevent', event)
+            // console.log('SSGDEBUG invalidevent', event)
             return
           }
           const changed = event.changed.map((filename: string) => path.relative(process.cwd(), filename)).join(', ')
