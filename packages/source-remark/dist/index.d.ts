@@ -23,6 +23,16 @@ declare let _preset: {
 };
 declare type PluginOpts = {
     dirPath: string;
+    filterType: 'all' | 'current' | undefined;
     modifyRecognizedExtensions?: string;
     modifyRemarkConfig?: string;
+};
+declare type SSGRemarkPluginFile = {
+    uid: string;
+    createdAt: Date;
+    modifiedAt: Date;
+    metadata: any;
+};
+declare function extractSlugObjectFromArray(arr: SSGRemarkPluginFile[]): {
+    [slug: string]: SSGRemarkPluginFile;
 };

@@ -32,10 +32,21 @@ let _preset = {
     settings: {},
     plugins: [
         require('remark-parse'),
+        require('remark-slug'),
+        [
+            require('remark-autolink-headings'),
+            {
+                behavior: 'append',
+                content: {
+                    type: 'element',
+                    tagName: 'span',
+                    properties: { className: ['icon', 'icon-link'] },
+                    children: [{ type: 'text', value: ' 🔗' }],
+                },
+            },
+        ],
         require('remark-toc'),
         require('remark-sectionize'),
-        require('remark-slug'),
-        [require('remark-autolink-headings'), { behavior: 'wrap' }],
         require('remark-rehype'),
         require('rehype-format'),
         [require('remark-frontmatter'), ['yaml']],
@@ -53,6 +64,7 @@ module.exports = function (opts) {
         _preset = produce(_preset, opts.modifyRemarkConfig);
     }
     // flattens all directories below the dirPath
+    // is recursive!
     function createIndex(recursiveDir = opts.dirPath) {
         return __awaiter(this, void 0, void 0, function* () {
             const files = yield readdir(recursiveDir);
@@ -60,7 +72,8 @@ module.exports = function (opts) {
                 const filePath = path.join(_dirPath, file);
                 const st = yield stat(filePath);
                 if (st.isDirectory()) {
-                    return yield createIndex(filePath);
+                    const temp = yield createIndex(filePath); // recursion
+                    return Object.values(temp); // take it back out of an object into an array
                 }
                 else {
                     if (file === '.DS_Store')
@@ -78,8 +91,8 @@ module.exports = function (opts) {
             });
             const arrs = yield Promise.all(files.map((file) => getStats(file, recursiveDir)));
             const strArr = [];
-            const index = strArr.concat.apply([], arrs); // ghetto flatten
-            return index
+            let index = strArr.concat.apply([], arrs); // ghetto flatten
+            index = index
                 .filter(Boolean)
                 .map((file) => {
                 const temp = fs.readFileSync(fromb64(file.uid), 'utf-8');
@@ -98,11 +111,17 @@ module.exports = function (opts) {
                 file.metadata = metadata;
                 return file;
             })
-                .filter(Boolean)
+                .filter(notEmpty)
                 .sort((a, b) => {
                 return a.metadata.pubdate < b.metadata.pubdate ? 1 : -1;
-            });
+            })
+                .filter((x) => (opts.filterType === 'all' ? true : new Date(x.metadata.date) <= new Date()));
+            return extractSlugObjectFromArray(index);
         });
+    }
+    // https://stackoverflow.com/questions/43118692/typescript-filter-out-nulls-from-an-array
+    function notEmpty(value) {
+        return value !== null && value !== undefined;
     }
     function getDataSlice(uid) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -124,3 +143,8 @@ module.exports = function (opts) {
         getDataSlice,
     };
 };
+function extractSlugObjectFromArray(arr) {
+    let obj = {};
+    arr.forEach((item) => (obj[item.metadata.slug] = item));
+    return obj;
+}

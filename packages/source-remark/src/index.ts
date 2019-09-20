@@ -25,10 +25,21 @@ let _preset = {
   settings: {},
   plugins: [
     require('remark-parse'),
+    require('remark-slug'),
+    [
+      require('remark-autolink-headings'),
+      {
+        behavior: 'append',
+        content: {
+          type: 'element',
+          tagName: 'span',
+          properties: { className: ['icon', 'icon-link'] },
+          children: [{ type: 'text', value: ' 🔗' }],
+        },
+      },
+    ],
     require('remark-toc'),
     require('remark-sectionize'),
-    require('remark-slug'),
-    [require('remark-autolink-headings'), { behavior: 'wrap' }],
     require('remark-rehype'),
     require('rehype-format'),
     [require('remark-frontmatter'), ['yaml']],
@@ -39,9 +50,11 @@ let _preset = {
 
 type PluginOpts = {
   dirPath: string
+  filterType: 'all' | 'current' | undefined
   modifyRecognizedExtensions?: string
   modifyRemarkConfig?: string
 }
+type SSGRemarkPluginFile = { uid: string; createdAt: Date; modifiedAt: Date; metadata: any }
 module.exports = function(opts: PluginOpts) {
   if (!opts.dirPath) throw new Error('dirpath not supplied to remark plugin')
   if (opts.modifyRecognizedExtensions) {
@@ -52,13 +65,15 @@ module.exports = function(opts: PluginOpts) {
   }
 
   // flattens all directories below the dirPath
+  // is recursive!
   async function createIndex(recursiveDir = opts.dirPath) {
     const files = await readdir(recursiveDir)
     const getStats = async (file: string, _dirPath: string) => {
       const filePath = path.join(_dirPath, file)
       const st = await stat(filePath)
       if (st.isDirectory()) {
-        return await createIndex(filePath)
+        const temp = await createIndex(filePath) // recursion
+        return Object.values(temp) // take it back out of an object into an array
       } else {
         if (file === '.DS_Store') return // skip ds store...
         if (!_recognizedExtensions.includes(path.extname(file))) return // skip
@@ -71,11 +86,10 @@ module.exports = function(opts: PluginOpts) {
         ]
       }
     }
-    type File = { uid: string; metadata: any }
-    const arrs: (File[])[] = await Promise.all(files.map((file: string) => getStats(file, recursiveDir)))
-    const strArr = [] as File[]
-    const index = strArr.concat.apply([], arrs) // ghetto flatten
-    return index
+    const arrs: (SSGRemarkPluginFile[])[] = await Promise.all(files.map((file: string) => getStats(file, recursiveDir)))
+    const strArr = [] as SSGRemarkPluginFile[]
+    let index = strArr.concat.apply([], arrs) // ghetto flatten
+    index = index
       .filter(Boolean)
       .map((file) => {
         const temp = fs.readFileSync(fromb64(file.uid), 'utf-8')
@@ -91,10 +105,17 @@ module.exports = function(opts: PluginOpts) {
         file.metadata = metadata
         return file
       })
-      .filter(Boolean)
+      .filter(notEmpty)
       .sort((a, b) => {
         return a!.metadata.pubdate < b!.metadata.pubdate ? 1 : -1
       })
+      .filter((x) => (opts.filterType === 'all' ? true : new Date(x!.metadata.date) <= new Date()))
+    return extractSlugObjectFromArray(index)
+  }
+
+  // https://stackoverflow.com/questions/43118692/typescript-filter-out-nulls-from-an-array
+  function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+    return value !== null && value !== undefined
   }
 
   async function getDataSlice(uid: string) {
@@ -115,4 +136,10 @@ module.exports = function(opts: PluginOpts) {
     createIndex,
     getDataSlice,
   }
+}
+
+function extractSlugObjectFromArray(arr: SSGRemarkPluginFile[]) {
+  let obj = {} as { [slug: string]: SSGRemarkPluginFile }
+  arr.forEach((item) => (obj[item.metadata.slug] = item))
+  return obj
 }

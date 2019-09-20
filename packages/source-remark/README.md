@@ -1,3 +1,3 @@
-# @ssgjs/source-jdown
+# @ssgjs/source-remark
 
-i'm not really sure i need this yet
+generate indexes via filesystem, and then use the remark ecosystem to generate data slices
