@@ -6,6 +6,7 @@ type SSGConfig = {
   ssgDotFolder: string
   configPath: string
   createIndex(): Promise<{ [key: string]: any }>
+  postExport: (index: { [key: string]: any }) => void
 }
 
 /**
@@ -20,8 +21,10 @@ export async function getSSGDataOnce(ssgConfig: SSGConfig) {
     const dotFolderDataPath = path.join(dotFolderPath, 'data.json')
     if (!fs.existsSync(dotFolderPath)) fs.mkdirSync(dotFolderPath)
     fs.writeFileSync(dotFolderDataPath, JSON.stringify(mainIndex))
+    return mainIndex
   } else {
     console.warn('ssg warning: no createIndex in ssg.config.js detected, continuing as sapper app')
+    return null
   }
 }
 

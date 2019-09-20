@@ -312,7 +312,7 @@ prog
         let ssgConfigPath = opts.ssgConfig || 'ssg.config.js'
         const ssgConfig = readSSGConfig(ssgConfigPath)
         // actually do stuff with it
-        await getSSGDataOnce(ssgConfig)
+        const mainIndex = await getSSGDataOnce(ssgConfig)
         /**
          *
          * END SSG SECTION
@@ -349,6 +349,22 @@ prog
           },
         })
 
+        /**
+         *
+         * SSG SECTION
+         *
+         * verify ssg config exists
+         *
+         */
+        if (ssgConfig.postExport && mainIndex) {
+          ssgConfig.postExport(mainIndex)
+        }
+        /**
+         *
+         * END SSG SECTION
+         *
+         *
+         */
         console.error(
           `\n> Finished in ${elapsed(start)}. Type ${colors.bold().cyan(`npx serve ${dest}`)} to run the app.`,
         )
