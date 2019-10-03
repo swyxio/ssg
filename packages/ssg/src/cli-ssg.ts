@@ -22,9 +22,10 @@ export async function getSSGDataOnce(ssgConfig: SSGConfig) {
   let mainIndex = {}
   const plugins = ssgConfig.plugins
   if (plugins) {
-    Object.entries(plugins).forEach(([pluginName,plugin]) => {
-      mainIndex[pluginName] = plugin.createIndex()
-    })
+    for (let temp of Object.entries(plugins)) {
+      const [pluginName,plugin] = temp
+      mainIndex[pluginName] = await plugin.createIndex()
+    }
   }
   
   if (ssgConfig.createIndex) {

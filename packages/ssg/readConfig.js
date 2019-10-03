@@ -6,9 +6,9 @@ const fs = require('fs')
 const configPath = path.resolve(process.cwd(), 'ssg.config.js')
 console.log('ssg: reading config')
 const ssgConfig = require(configPath)
-const dotFolderPath = path.resolve(ssgConfig.ssgDotFolder)
+const dotFolderPath = path.resolve(ssgConfig.ssgDotFolder || '.ssg') // todo - resolve this properly
 const dotFolderDataPath = path.join(dotFolderPath, 'data.json')
-const getIndex = () => fs.readFileSync(dotFolderDataPath, 'utf8')
+const getIndex = () => JSON.parse(fs.readFileSync(dotFolderDataPath, 'utf8'))
 
 const getDataSlice = async (key, uid) => {
   const plugins = ssgConfig.plugins
