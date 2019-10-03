@@ -54,7 +54,7 @@ prog
       ssgConfig: string
     }) => {
       // @ts-ignore
-      const { dev } = await import('sapper/api')
+      const { dev } = await import('@ssgjs/sapper/api')
       try {
         const watcher = dev({
           cwd: opts.cwd,
@@ -298,7 +298,7 @@ prog
         }
 
         // @ts-ignore
-        const { export: _export } = await import('sapper/api')
+        const { export: _export } = await import('@ssgjs/sapper/api')
         const { default: pb } = await import('pretty-bytes')
 
         /**
@@ -388,7 +388,7 @@ async function _build(
   ext: string,
 ) {
   // @ts-ignore
-  const { build } = await import('sapper/api')
+  const { build } = await import('@ssgjs/sapper/api')
 
   await build({
     bundler,
