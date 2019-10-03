@@ -357,7 +357,7 @@ prog
          *
          */
         if (ssgConfig.postExport && mainIndex) {
-          ssgConfig.postExport(mainIndex)
+          await ssgConfig.postExport(mainIndex)
         }
         /**
          *

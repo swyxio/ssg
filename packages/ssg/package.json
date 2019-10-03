@@ -1,6 +1,6 @@
 {
   "name": "ssg",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "license": "MIT",
   "bin": {
     "ssg": "./ssg"
@@ -27,14 +27,14 @@
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
+    "@ssgjs/sapper": "^0.27.9-fork.0",
     "@types/node": "^12.7.5",
     "auto-changelog": "^1.16.1",
     "gh-release": "^3.5.0",
-    "sapper": "^0.27.8",
     "typescript": "^3.6.3"
   },
   "peerDependencies": {
-    "sapper": "^0.27.8"
+    "@ssgjs/sapper": "^0.27.9-fork.0"
   },
   "bugs": {
     "url": "https://github.com/sw-yx/ssg/issues"

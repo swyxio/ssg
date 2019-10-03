@@ -4,10 +4,12 @@ a very experimental static site generator overlay on top of Sapper. For a simple
 
 https://www.youtube.com/watch?v=o_o0PAts9Gg&feature=youtu.be
 
+Because Sapper needs fixes to support static export at scale, we use a light fork of Sapper (https://github.com/sw-yx/sapper) instead of sapper itself. Hopefully this fork will not be necessary in future, but for now we need these fixes for ssg to work.
+
 ## Installation
 
 ```bash
-yarn add sapper svelte ssg
+yarn add @ssgjs/sapper svelte ssg
 ```
 
 ## What it expects
