@@ -1,11 +1,15 @@
 import chokidar from 'chokidar'
 import fs from 'fs'
 import path from 'path'
+type Dict = Record<string, any>
 type SSGConfig = {
-  contentFolder: string
+  /** space separated places to watch for reloads. default 'content' */
+  watchFolders: string
+  /** where to store ssg index data. default '.ssg' */
   ssgDotFolder: string
   configPath: string
-  createIndex(): Promise<{ [key: string]: any }>
+  plugins: Dict
+  createIndex(mainIndex: Dict): Promise<{ [key: string]: any }>
   postExport: (index: { [key: string]: any }) => void
 }
 
@@ -15,16 +19,29 @@ type SSGConfig = {
  *
  */
 export async function getSSGDataOnce(ssgConfig: SSGConfig) {
+  let mainIndex = {}
+  const plugins = ssgConfig.plugins
+  if (plugins) {
+    Object.entries(plugins).forEach(([pluginName,plugin]) => {
+      mainIndex[pluginName] = plugin.createIndex()
+    })
+  }
+  
   if (ssgConfig.createIndex) {
-    const mainIndex = await ssgConfig.createIndex()
+    mainIndex = await ssgConfig.createIndex(mainIndex)
     const dotFolderPath = path.resolve(ssgConfig.ssgDotFolder)
     const dotFolderDataPath = path.join(dotFolderPath, 'data.json')
     if (!fs.existsSync(dotFolderPath)) fs.mkdirSync(dotFolderPath)
     fs.writeFileSync(dotFolderDataPath, JSON.stringify(mainIndex))
     return mainIndex
-  } else {
-    console.warn('ssg warning: no createIndex in ssg.config.js detected, continuing as sapper app')
+  } 
+
+  // idk if this is the best check...
+  if (Object.keys(mainIndex).length < 1) {
+    console.warn('ssg warning: no index data from ssg plugins found, continuing as sapper app')
     return null
+  } else {
+    return mainIndex
   }
 }
 
@@ -38,7 +55,7 @@ export function readSSGConfig(ssgConfigPath: string): SSGConfig {
   let ssgConfig = require(path.resolve(ssgConfigPath))
   ssgConfig.configPath = ssgConfigPath
   ssgConfig.ssgDotFolder = ssgConfig.ssgDotFolder || '.ssg'
-  ssgConfig.contentFolder = ssgConfig.contentFolder || 'content'
+  ssgConfig.watchFolders = ssgConfig.watchFolders || 'content'
   return ssgConfig
 }
 
@@ -59,7 +76,7 @@ export function watchSSGFiles(watcher: any, ssgConfig: Partial<SSGConfig>) {
     // get the frontend to live reload!
     watcher.dev_server.send({ action: 'reload' })
   }
-  const filesToWatch = [ssgConfig.contentFolder, ssgConfig.configPath].filter(Boolean) as string[]
+  const filesToWatch = [...ssgConfig.watchFolders!.split(' '), ssgConfig.configPath].filter(Boolean) as string[]
   if (filesToWatch.length < 1) {
     console.log('Warning: no SSG config or content files detected, operating as a basic Sapper app!')
     return

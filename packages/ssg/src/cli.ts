@@ -82,6 +82,8 @@ prog
          */
         const { getSSGDataOnce, watchSSGFiles, readSSGConfig } = await import('./cli-ssg')
         let ssgConfigPath = opts.ssgConfig || 'ssg.config.js'
+        // warning: opts.ssgConfig doesnt work for the readConfig seciton yet
+        // TODO!
         const ssgConfig = readSSGConfig(ssgConfigPath)
         // actually do stuff with it
         await getSSGDataOnce(ssgConfig)
@@ -310,6 +312,8 @@ prog
          */
         const { getSSGDataOnce, readSSGConfig } = await import('./cli-ssg')
         let ssgConfigPath = opts.ssgConfig || 'ssg.config.js'
+        // warning: opts.ssgConfig doesnt work for the readConfig seciton yet
+        // TODO!
         const ssgConfig = readSSGConfig(ssgConfigPath)
         // actually do stuff with it
         const mainIndex = await getSSGDataOnce(ssgConfig)
