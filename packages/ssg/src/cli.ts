@@ -34,7 +34,7 @@ prog
   .option('--static', 'Static files directory', 'static')
   .option('--output', 'Sapper intermediate file output directory', 'node_modules/@sapper')
   .option('--build-dir', 'Development build directory', '__sapper__/dev')
-  .option('--ext', 'Custom Route Extension', '.svelte .html')
+  .option('--ext', 'Custom Route Extension', '.svelte .svexy .html')
   .option('--ssgConfig', 'SSG config file', 'ssg.config.js')
   .action(
     async (opts: {
@@ -86,7 +86,7 @@ prog
         // TODO!
         const ssgConfig = readSSGConfig(ssgConfigPath)
         // actually do stuff with it
-        await getSSGDataOnce(ssgConfig)
+        await getSSGDataOnce(ssgConfig, path.resolve(opts['build-dir'], '../'))
         watchSSGFiles(watcher, ssgConfig)
         /**
          *
@@ -197,7 +197,7 @@ prog
   .option('--src', 'Source directory', 'src')
   .option('--routes', 'Routes directory', 'src/routes')
   .option('--output', 'Sapper intermediate file output directory', 'node_modules/@sapper')
-  .option('--ext', 'Custom page route extensions (space separated)', '.svelte .html')
+  .option('--ext', 'Custom page route extensions (space separated)', '.svelte .svexy .html')
   .example(`build custom-dir -p 4567`)
   .action(
     async (
@@ -259,7 +259,7 @@ prog
   .option('--static', 'Static files directory', 'static')
   .option('--output', 'Sapper intermediate file output directory', 'node_modules/@sapper')
   .option('--build-dir', 'Intermediate build directory', '__sapper__/build')
-  .option('--ext', 'Custom page route extensions (space separated)', '.svelte .html')
+  .option('--ext', 'Custom page route extensions (space separated)', '.svelte .svexy .html')
   .option('--entry', 'Custom entry points (space separated)', '/')
   .action(
     async (
@@ -316,7 +316,8 @@ prog
         // TODO!
         const ssgConfig = readSSGConfig(ssgConfigPath)
         // actually do stuff with it
-        const mainIndex = await getSSGDataOnce(ssgConfig)
+        const mainIndex = await getSSGDataOnce(ssgConfig, path.resolve(opts['build-dir'], '../'))
+
         /**
          *
          * END SSG SECTION

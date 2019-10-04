@@ -5,8 +5,6 @@ type Dict = Record<string, any>
 type SSGConfig = {
   /** space separated places to watch for reloads. default 'content' */
   watchFolders: string
-  /** where to store ssg index data. default '.ssg' */
-  ssgDotFolder: string
   configPath: string
   plugins: Dict
   createIndex(mainIndex: Dict): Promise<{ [key: string]: any }>
@@ -18,24 +16,24 @@ type SSGConfig = {
  * run getInitialData only once
  *
  */
-export async function getSSGDataOnce(ssgConfig: SSGConfig) {
+export async function getSSGDataOnce(ssgConfig: SSGConfig, sapperDir: string) {
   let mainIndex = {}
   const plugins = ssgConfig.plugins
   if (plugins) {
     for (let temp of Object.entries(plugins)) {
-      const [pluginName,plugin] = temp
+      const [pluginName, plugin] = temp
       mainIndex[pluginName] = await plugin.createIndex()
     }
   }
-  
+
   if (ssgConfig.createIndex) {
     mainIndex = await ssgConfig.createIndex(mainIndex)
-    const dotFolderPath = path.resolve(ssgConfig.ssgDotFolder)
+    const dotFolderPath = path.join(sapperDir, 'ssg')
     const dotFolderDataPath = path.join(dotFolderPath, 'data.json')
     if (!fs.existsSync(dotFolderPath)) fs.mkdirSync(dotFolderPath)
     fs.writeFileSync(dotFolderDataPath, JSON.stringify(mainIndex))
     return mainIndex
-  } 
+  }
 
   // idk if this is the best check...
   if (Object.keys(mainIndex).length < 1) {
@@ -55,7 +53,6 @@ export function readSSGConfig(ssgConfigPath: string): SSGConfig {
   if (!fs.existsSync(ssgConfigPath)) throw new Error('ssgConfig file ' + ssgConfigPath + ' missing')
   let ssgConfig = require(path.resolve(ssgConfigPath))
   ssgConfig.configPath = ssgConfigPath
-  ssgConfig.ssgDotFolder = ssgConfig.ssgDotFolder || '.ssg'
   ssgConfig.watchFolders = ssgConfig.watchFolders || 'content'
   return ssgConfig
 }

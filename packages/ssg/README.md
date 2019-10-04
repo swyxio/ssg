@@ -14,9 +14,10 @@ yarn add @ssgjs/sapper svelte ssg
 
 ## What it expects
 
-1. you will have a `src/routes/data/[slug].json.js` file in your main Sapper project, that looks like this:
+1. you will have a `src/routes/data/[ssgData].json.js` file in your main Sapper project, that looks like this:
 
 ```js
+// src/routes/data/[ssgData].json.js`
 const { getDataSlice, getIndex } = require('ssg/readConfig')
 
 export async function get(req, res) {
@@ -41,9 +42,11 @@ export async function get(req, res) {
   }
 }
 
+> ⚠️ STOP! the filename is extremely important! doublecheck it is `src/routes/data/[ssgData].json.js``
+
 ```
 
-2. You should have a `ssg.config.js` that exports a `getInitialData` (run once) and `getData` (run each time) function that provides this data:
+2. You should have a `ssg.config.js` that exports a `createIndex` (run once) and `getDataSlice` (run each time) function that provides this data:
 
 ```js
 // optional. called repeatedly, can be expensive
@@ -74,6 +77,7 @@ exports.postExport = async mainIndex => {
 }
 ```
 
+
 In your templates, you may now query this data at any time:
 
 ```html
@@ -97,4 +101,21 @@ In your templates, you may now query this data at any time:
 
 Under the hood, `ssg` runs `sapper dev` for you, and watches and reloads it whenever you change your config or contents folder.
 
-It runs `getInitialData` once and saves that result to a cache, and then you can run `getData` anytime you want to query that cache.
+It runs `createIndex` once and saves that result to a cache, and then you can run `getDataSlice` anytime you want to query that cache.
+
+## Plugins
+
+You can also use plugins that have prewritten `createIndex` and `getDataSlice` for you:
+
+```js
+// ssg.config.js
+const remark = require('@ssgjs/source-remark')
+const writing = remark({ dirPath: 'content/writing' })
+const speaking = remark({ dirPath: 'content/talks' })
+
+// optional data plugins. must be object, so we can namespace
+exports.plugins = {
+  writing,
+  speaking
+}
+```
