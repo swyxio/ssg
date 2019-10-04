@@ -53,6 +53,9 @@ type PluginOpts = {
   filterType: 'all' | 'current' | undefined
   modifyRecognizedExtensions?: string
   modifyRemarkConfig?: string
+  // onCreateIndex?: (index: {
+  //     [slug: string]: SSGRemarkPluginFile;
+  // }) => Promise<void>
 }
 type SSGRemarkPluginFile = { uid: string; createdAt: Date; modifiedAt: Date; metadata: any }
 module.exports = function(opts: PluginOpts) {
@@ -110,7 +113,12 @@ module.exports = function(opts: PluginOpts) {
         return a!.metadata.pubdate < b!.metadata.pubdate ? 1 : -1
       })
       .filter((x) => (opts.filterType === 'all' ? true : new Date(x!.metadata.date) <= new Date()))
-    return extractSlugObjectFromArray(index)
+    const result = extractSlugObjectFromArray(index)
+    // // i dont really use this yet
+    // if (opts.onCreateIndex) {
+    //   await opts.onCreateIndex(result) // optional logging
+    // }
+    return result
   }
 
   // https://stackoverflow.com/questions/43118692/typescript-filter-out-nulls-from-an-array

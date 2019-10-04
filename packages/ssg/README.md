@@ -17,15 +17,22 @@ yarn add @ssgjs/sapper svelte ssg
 1. you will have a `src/routes/data/[slug].json.js` file in your main Sapper project, that looks like this:
 
 ```js
-const { getData } = require('../../../ssg.config')
+const { getDataSlice, getIndex } = require('ssg/readConfig')
 
 export async function get(req, res) {
-  const { slug } = req.params
-  const splitSlug = slug.split('___ssg___')
-  const category = splitSlug[0]
-  const realSlug = splitSlug[1]
-  const data = await getData(category, realSlug)
-  if (data) {
+  const { ssgData } = req.params
+  const splitSlug = ssgData.split('___ssg___')
+  const key = splitSlug[0]
+  const uid = splitSlug[1]
+  const mainIndex = getIndex()
+  let data
+  // console.log('getting', key, uid)
+  if (uid === 'index') {
+    data = mainIndex[key]
+  } else {
+    data = await getDataSlice(key, uid)
+  }
+  if (typeof data !== 'undefined') {
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify(data))
   } else {
@@ -33,27 +40,37 @@ export async function get(req, res) {
     res.end(JSON.stringify({ message: `Not found` }))
   }
 }
+
 ```
 
 2. You should have a `ssg.config.js` that exports a `getInitialData` (run once) and `getData` (run each time) function that provides this data:
 
 ```js
-exports.getData = async (category, slug) => {
-  // read cache and 
-  // do less expensive subsequent fetches
-  const data = require(path.resolve('.ssg/data.json'))
-  const result = data[category][slug]
-  if (typeof result === 'undefined') throw new Error('no data found for ' + slug)
-  return result
+// optional. called repeatedly, can be expensive
+exports.getDataSlice = async (key, uid) => {
+  console.log('optional getDataSlice action')
+  // we dont really use the key here
+  if (key === 'posts') {
+    if (uid === 'foo') {
+      return { title: 'foo', html: '<div> the foo post </div>' }
+    } else {
+      return { title: 'bar', html: '<div> the bar post </div>' }
+    }
+  } else {
+    throw new Error('invalid key ' + key )
+  }
 }
 
-exports.getInitialData = async () => {
+exports.createIndex = async (mainIndex = {}) => {
   // do expensive initial fetches and cache them in .ssg/data.json
-  return {
-    index: [{ title: 'foo', slug: 'foo' }, { title: 'bar', slug: 'bar' }],
-    foo: { title: 'foo', html: '<div> the foo post </div>' },
-    bar: { title: 'bar', html: '<div> the bar post </div>' },
-  }
+  mainIndex.index = [{ title: 'foo', slug: 'foo' }, { title: 'bar', slug: 'bar' }]
+  return mainIndex
+}
+
+// optional lifecycle hook
+exports.postExport = async mainIndex => {
+  // eg for RSS
+  console.log('postExport', mainIndex)
 }
 ```
 
@@ -63,7 +80,8 @@ In your templates, you may now query this data at any time:
 <!-- src/routes/talks/[slug].svelte -->
 <script context="module">
   export async function preload({ params, query }) {
-    const res = await this.fetch(`data/talks___ssg___${params.slug}.json`)
+    cosnt key = 'posts'
+    const res = await this.fetch(`data/${key}___ssg___${params.slug}.json`)
     const data = await res.json()
     if (res.status === 200) {
       return { post: data }

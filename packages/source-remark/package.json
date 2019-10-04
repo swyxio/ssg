@@ -1,6 +1,6 @@
 {
   "name": "@ssgjs/source-remark",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "dist/index.js",
   "license": "MIT",
   "repository": {
@@ -11,7 +11,7 @@
     "front-matter": "^3.0.2",
     "immer": "^4.0.0",
     "rehype-format": "^3.0.0",
-    "rehype-shiki": "^0.0.4",
+    "rehype-shiki": "0.0.5",
     "rehype-slug": "^2.0.3",
     "rehype-stringify": "^6.0.0",
     "remark": "^11.0.1",
