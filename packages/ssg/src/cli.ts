@@ -31,8 +31,9 @@ prog
       const prompt = new MultiSelect({
         // initial:[0, 1], // we could set default files to pick but choosing not to for now
         name: 'files',
-        message: 'Pick files to copy out',
+        message: 'Pick files to copy out! **Note: use <Space> to pick files, <i> to invert selection**',
         choices: [
+          { name: '[ssgData].json.js', value: 'src/routes/data/[ssgData].json.js', hint: `ssg's default data route` },
           { name: 'template.html', value: 'src/template.html', hint: `sapper's template.html` },
           { name: 'rollup.config.js', value: 'rollup.config.js', hint: 'the fallback rollup config used in ssg' },
           { name: 'client.js', value: 'src/client.js', hint: `sapper's client.js` },

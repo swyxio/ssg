@@ -3,6 +3,7 @@ import * as path from 'path'
 import chalk from 'chalk'
 // @ts-ignore
 import { Confirm } from 'enquirer'
+import {ensureDirectoryExistence} from './utils'
 
 export async function eject([_sourceFile, destinationPath]: string[]) {
   const sourceFile = path.resolve(__dirname, '../ejectableFiles/' + _sourceFile)
@@ -28,13 +29,3 @@ export async function eject([_sourceFile, destinationPath]: string[]) {
   }
 }
 
-
-function ensureDirectoryExistence(filePath: string) {
-  var dirname = path.dirname(filePath);
-  if (fs.existsSync(dirname)) {
-    return;
-  }
-  ensureDirectoryExistence(dirname);
-  fs.mkdirSync(dirname);
-  return
-}

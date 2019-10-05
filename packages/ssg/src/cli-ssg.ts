@@ -1,6 +1,7 @@
 import chokidar from 'chokidar'
 import fs from 'fs'
 import path from 'path'
+import {ensureDirectoryExistence} from './utils'
 type Dict = Record<string, any>
 type SSGConfig = {
   /** space separated places to watch for reloads. default 'content' */
@@ -30,6 +31,7 @@ export async function getSSGDataOnce(ssgConfig: SSGConfig, sapperDir: string) {
     mainIndex = await ssgConfig.createIndex(mainIndex)
     const dotFolderPath = path.join(sapperDir, 'ssg')
     const dotFolderDataPath = path.join(dotFolderPath, 'data.json')
+    ensureDirectoryExistence(dotFolderDataPath)
     if (!fs.existsSync(dotFolderPath)) fs.mkdirSync(dotFolderPath)
     fs.writeFileSync(dotFolderDataPath, JSON.stringify(mainIndex))
     return mainIndex
