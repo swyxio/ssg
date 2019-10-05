@@ -21,6 +21,12 @@ yarn add ssg
 
 Svelte and @ssgjs/sapper are included as direct dependencies, however feel free to also install them if you need to.
 
+## Contributing
+
+This project needs feedback and maintainers.
+
+this is a very nascent project, you'll run into bugs. report them please and also help add tests. if you have feature suggestions please open an issue first before PR.
+
 ## Usage and CLI API
 
 - `ssg eject` - scaffold out fallback files used by `ssg`
