@@ -1,8 +1,8 @@
 # Sapper Site Generator
 
-a very experimental static site generator overlay on top of Sapper. For a simple demo see this:
+a very experimental static site generator overlay on top of Sapper.
 
-https://www.youtube.com/watch?v=o_o0PAts9Gg&feature=youtu.be
+- 6 min Demo: https://www.youtube.com/watch?v=JpsxYhkVC7M
 
 Because Sapper needs fixes to support static export at scale, and moves too slowly for the development of this project, we use a light fork of Sapper (https://github.com/sw-yx/sapper) instead of sapper itself. Hopefully this fork will not be necessary in future, but for now we need these fixes for ssg to work. We aim to keep this fork a superset of sapper as much as possible.
 
@@ -16,8 +16,10 @@ Active Codebases you can see this project in use:
 ## Installation
 
 ```bash
-yarn add @ssgjs/sapper svelte ssg
+yarn add ssg
 ```
+
+Svelte and @ssgjs/sapper are included as direct dependencies, however feel free to also install them if you need to.
 
 ## Usage and CLI API
 
@@ -158,3 +160,8 @@ exports.plugins = {
   speaking
 }
 ```
+
+## Deploying
+
+You can run `ssg export` to export just like `sapper export` does. for convenience, I've included a `neltify.toml` config so you dont have to look it up. Just `ssg eject`.
+
