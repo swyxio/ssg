@@ -48,7 +48,12 @@ async function eject([_sourceFile, destinationPath]: string[]) {
         });
         const answer = await prompt.run()
         if (!answer) return // dont override
-        fs.copyFileSync(destinationPath + '.old', destinationPath);
+        try {
+          fs.renameSync( destinationPath, destinationPath + '.old');
+        } catch (err) {
+          console.log('renaming failed. copying and overwriting instead.')
+          fs.copyFileSync( destinationPath, destinationPath + '.copy');
+        }
       }
       fs.copyFileSync(sourceFile, destinationPath);
       console.log(`${chalk.green('copied')} ${chalk.yellow(sourceFile)} to ${chalk.yellow(destinationPath)}`)

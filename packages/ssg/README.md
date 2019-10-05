@@ -48,8 +48,8 @@ However, you can scaffold out these files with the `ssg eject` command:
 ```bash
 $ yarn ssg eject
 ✔ Pick files to copy out · template.html, client.js
-✔ A file exists at src/template.html. Are you sure you want to overwrite? (y/N) (y/N) · true
-✔ A file exists at src/client.js. Are you sure you want to overwrite? (y/N) (y/N) · false
+✔ A file exists at src/template.html. Are you sure you want to overwrite? (y/N) (y/N) · false
+✔ A file exists at src/client.js. Are you sure you want to overwrite? (y/N) (y/N) · true
 copied /Users/swyx/Work/community/node_modules/ssg/ejectableFiles/client.js to src/client.js
 ```
 
@@ -83,10 +83,12 @@ export async function get(req, res) {
     res.end(JSON.stringify({ message: `Not found` }))
   }
 }
-
-> ⚠️ STOP! the filename is extremely important! doublecheck it is `src/routes/data/[ssgData].json.js``
-
 ```
+
+
+> ⚠️ STOP! the filename is extremely important! doublecheck it is `src/routes/data/[ssgData].json.js` or expect the above code to break
+
+You can scaffold this file with `ssg eject`.
 
 2. If you need to send data, you should have a `ssg.config.js` that exports a `createIndex` (run once) and `getDataSlice` (run each time) function that provides this data:
 
