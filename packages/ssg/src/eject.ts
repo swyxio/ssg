@@ -1,15 +1,14 @@
 import * as fs from 'fs'
 import * as path from 'path'
-
-
+import chalk from 'chalk'
 
 export function eject([_sourceFile, destinationPath]: string[]) {
   const sourceFile = path.resolve(__dirname, '../ejectableFiles/' + _sourceFile)
   if (fs.existsSync(sourceFile)) {
-    console.log({sourceFile, destinationPath})
     try {
       ensureDirectoryExistence(destinationPath)
       fs.copyFileSync(sourceFile, destinationPath);
+      console.log(`${chalk.green('copied')} ${chalk.yellow(sourceFile)} to ${chalk.yellow(destinationPath)}`)
     } catch(err) {
       console.error('error copying file to ' + destinationPath)
     }
