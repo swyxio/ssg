@@ -1,6 +1,6 @@
 {
   "name": "ssg",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "license": "MIT",
   "bin": {
     "ssg": "./ssg"
@@ -20,6 +20,7 @@
     "readConfig.js"
   ],
   "dependencies": {
+    "@ssgjs/sapper": "^0.27.9-fork.8",
     "chalk": "^2.4.2",
     "chokidar": "^3.0.2",
     "enquirer": "^2.3.2",
@@ -27,9 +28,8 @@
     "kleur": "^3.0.3",
     "pretty-bytes": "^5.3.0",
     "sade": "^1.6.1",
-    "tree-kill": "^1.2.1",
-    "@ssgjs/sapper": "^0.27.9-fork.6",
-    "svelte": "^3.12.1"
+    "svelte": "^3.12.1",
+    "tree-kill": "^1.2.1"
   },
   "devDependencies": {
     "@types/node": "^12.7.5",
