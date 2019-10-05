@@ -1,3 +1,5 @@
+// this file was scaffolded with `ssg eject`.
+// Feel free to modify as you would Sapper boilerplate
 import sirv from 'sirv'
 import polka from 'polka'
 import compression from 'compression'

@@ -1,4 +1,5 @@
-// fallback rollup.config.js
+// this file was scaffolded with `ssg eject`.
+// Feel free to modify as you would Sapper boilerplate
 
 import resolve from 'rollup-plugin-node-resolve'
 import replace from 'rollup-plugin-replace'
