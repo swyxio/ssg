@@ -85,9 +85,11 @@ prog
         // warning: opts.ssgConfig doesnt work for the readConfig seciton yet
         // TODO!
         const ssgConfig = readSSGConfig(ssgConfigPath)
-        // actually do stuff with it
-        await getSSGDataOnce(ssgConfig, path.resolve(opts['build-dir'], '../'))
-        watchSSGFiles(watcher, ssgConfig)
+        if (ssgConfig) {
+          // actually do stuff with it
+          await getSSGDataOnce(ssgConfig, path.resolve(opts['build-dir'], '../'))
+          watchSSGFiles(watcher, ssgConfig)
+        }
         /**
          *
          * END SSG SECTION
@@ -315,8 +317,11 @@ prog
         // warning: opts.ssgConfig doesnt work for the readConfig seciton yet
         // TODO!
         const ssgConfig = readSSGConfig(ssgConfigPath)
-        // actually do stuff with it
-        const mainIndex = await getSSGDataOnce(ssgConfig, path.resolve(opts['build-dir'], '../'))
+        let mainIndex
+        if (ssgConfig) {
+          // actually do stuff with it
+          mainIndex = await getSSGDataOnce(ssgConfig, path.resolve(opts['build-dir'], '../'))
+        }
 
         /**
          *
@@ -361,7 +366,7 @@ prog
          * verify ssg config exists
          *
          */
-        if (ssgConfig.postExport && mainIndex) {
+        if (ssgConfig && ssgConfig.postExport && mainIndex) {
           await ssgConfig.postExport(mainIndex)
         }
         /**

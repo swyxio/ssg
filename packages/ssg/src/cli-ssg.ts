@@ -49,8 +49,11 @@ export async function getSSGDataOnce(ssgConfig: SSGConfig, sapperDir: string) {
  * read ssg config and ensure defaults exist
  *
  */
-export function readSSGConfig(ssgConfigPath: string): SSGConfig {
-  if (!fs.existsSync(ssgConfigPath)) throw new Error('ssgConfig file ' + ssgConfigPath + ' missing')
+export function readSSGConfig(ssgConfigPath: string): SSGConfig | null {
+  if (!fs.existsSync(ssgConfigPath)) {
+    console.warn('ssgConfig file ' + ssgConfigPath + ' doesnt exist, continuing as regular sapper app')
+    return null
+  }
   let ssgConfig = require(path.resolve(ssgConfigPath))
   ssgConfig.configPath = ssgConfigPath
   ssgConfig.watchFolders = ssgConfig.watchFolders || 'content'
