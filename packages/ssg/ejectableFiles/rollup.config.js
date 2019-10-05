@@ -16,7 +16,8 @@ const mode = process.env.NODE_ENV
 const dev = mode === 'development'
 const legacy = !!process.env.SAPPER_LEGACY_BUILD
 
-const config = require('../../config/rollup.js')
+console.warn('NOTE TO DEVELOPER : THIS EJECTED ROLLUP CONFIG DOESNT WORK WELL YET, PLEASE HELP IF YOU CAN')
+const config = require('@ssgjs/sapper/config/rollup.js')
 
 // replacement for `import pkg from './package.json'`
 const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
@@ -25,9 +26,9 @@ let clientInput = config.client.input()
 let serverInput = config.server.input()
 let swInput = config.serviceworker.input() //'node_modules/ssg/defaultSrcFiles/service-worker.js',
 
-if (!fs.existsSync(clientInput)) clientInput = path.resolve(__dirname, './client.js') // fallback
-if (!fs.existsSync(serverInput)) serverInput = path.resolve(__dirname, './server.js') // fallback
-if (!fs.existsSync(swInput)) swInput = path.resolve(__dirname, './service-worker.js') // fallback
+if (!fs.existsSync(clientInput)) clientInput = path.resolve(__dirname, './src/client.js') // fallback
+if (!fs.existsSync(serverInput.server)) serverInput = { server: path.resolve(__dirname, './src/server.js') } // fallback
+if (!fs.existsSync(swInput)) swInput = path.resolve(__dirname, './src/service-worker.js') // fallback
 
 const onwarn = (warning, onwarn) =>
   (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) || onwarn(warning)
@@ -62,11 +63,11 @@ const defaultRollupConfig = {
         extensions, // defined above
         preprocess, // defined above
       }),
-      resolve(),
-      // resolve({
-      //   browser: true,
-      //   dedupe,
-      // }),
+      // resolve(),
+      resolve({
+        browser: true,
+        dedupe,
+      }),
       commonjs(),
       // json(),
       legacy &&
@@ -117,15 +118,16 @@ const defaultRollupConfig = {
         extensions, // defined above
         preprocess, // defined above
       }),
-      resolve(),
-      // resolve({
-      //   dedupe,
-      // }),
+      // resolve(),
+      resolve({
+        dedupe,
+      }),
       commonjs(),
     ],
-    external: Object.keys(pkg.dependencies).concat(
-      require('module').builtinModules || Object.keys(process.binding('natives')),
-    ),
+    // external: Object.keys(pkg.dependencies).concat(
+    //   require('module').builtinModules || Object.keys(process.binding('natives')),
+    // ),
+    external: [].concat(require('module').builtinModules || Object.keys(process.binding('natives'))),
 
     onwarn,
   },

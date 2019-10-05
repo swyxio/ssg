@@ -1,6 +1,6 @@
 {
   "name": "ssg",
-  "version": "0.0.29",
+  "version": "0.0.31",
   "license": "MIT",
   "bin": {
     "ssg": "./ssg"

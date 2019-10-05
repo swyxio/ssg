@@ -16,7 +16,7 @@ export async function eject([_sourceFile, destinationPath]: string[]) {
           message: `A file exists at ${chalk.cyan(destinationPath)}. Are you sure you want to overwrite? (y/N)`
         });
         const answer = await prompt.run()
-        if (answer) return // dont override
+        if (!answer) return // dont override
         fs.copyFileSync(destinationPath + '.old', destinationPath);
       }
       fs.copyFileSync(sourceFile, destinationPath);
