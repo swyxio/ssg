@@ -5,6 +5,8 @@ import sade from 'sade'
 import colors from 'kleur'
 import { elapsed, repeat, left_pad, format_milliseconds } from './utils'
 import { InvalidEvent, ErrorEvent, FatalEvent, BuildEvent, ReadyEvent } from './interfaces'
+//@ts-ignore
+import { MultiSelect } from 'enquirer'
 
 type TODO_ANY = any
 
@@ -18,6 +20,35 @@ if (process.argv[2] === 'start') {
 }
 
 const start = Date.now()
+
+
+prog
+  .command('eject')
+  .describe('Copy out fallback files')
+  .action(
+    // async (opts: {}) => {
+    async () => {
+      const prompt = new MultiSelect({
+        name: 'files',
+        message: 'Pick files to copy out',
+        choices: [
+          { name: 'client.js', value: 'src/client.js', hint: 'its client.js' },
+          { name: 'server.js', value: 'src/server.js', hint: 'its server.js' },
+          { name: 'service-worker.js', value: 'src/service-worker.js', hint: 'its service-worker.js' },
+          { name: 'error.svelte', value: 'src/routes/_error.svelte', hint: 'its error.svelte' },
+          { name: 'layout.svelte', value: 'src/routes/_layout.svelte', hint: 'its layout.svelte' },
+          { name: 'template.html', value: 'src/template.html', hint: 'its template.html' }
+        ],
+        result(names: any) {
+          return this.map(names); // so we can actually get at the value
+        }
+      });
+      const { eject } = await import('./eject')
+      prompt.run().then((selectedFiles: Record<string, string>) => {
+        Object.entries(selectedFiles).forEach(eject)
+      })
+        .catch(console.error);
+    })
 
 prog
   .command('dev')

@@ -12,9 +12,19 @@ Because Sapper needs fixes to support static export at scale, we use a light for
 yarn add @ssgjs/sapper svelte ssg
 ```
 
+## Fallbacks
+
+`ssg` makes these Sapper files optional:
+
+- `src/client.js`
+- `src/server.js`
+- `src/service-workers.js`
+- `src/template.html`
+- `rollup.config.js`
+
 ## What it expects
 
-1. you will have a `src/routes/data/[ssgData].json.js` file in your main Sapper project, that looks like this:
+1. if you need to get data, you will have a `src/routes/data/[ssgData].json.js` file in your main Sapper project, that looks like this:
 
 ```js
 // src/routes/data/[ssgData].json.js`
@@ -46,7 +56,7 @@ export async function get(req, res) {
 
 ```
 
-2. You should have a `ssg.config.js` that exports a `createIndex` (run once) and `getDataSlice` (run each time) function that provides this data:
+2. If you need to send data, you should have a `ssg.config.js` that exports a `createIndex` (run once) and `getDataSlice` (run each time) function that provides this data:
 
 ```js
 // optional. called repeatedly, can be expensive
