@@ -29,14 +29,15 @@ prog
     // async (opts: {}) => {
     async () => {
       const prompt = new MultiSelect({
+        initial:[0, 1],
         name: 'files',
         message: 'Pick files to copy out',
         choices: [
+          { name: 'template.html', value: 'src/template.html', hint: `sapper's template.html` },
           { name: 'rollup.config.js', value: 'rollup.config.js', hint: 'the fallback rollup config used in ssg' },
           { name: 'client.js', value: 'src/client.js', hint: `sapper's client.js` },
           { name: 'server.js', value: 'src/server.js', hint: `sapper's server.js` },
           { name: 'service-worker.js', value: 'src/service-worker.js', hint: `sapper's service-worker.js` },
-          { name: 'template.html', value: 'src/template.html', hint: `sapper's template.html` },
           { name: 'error.svelte', value: 'src/routes/_error.svelte', hint: `(unused) error.svelte` },
           { name: 'layout.svelte', value: 'src/routes/_layout.svelte', hint: `(unused) layout.svelte` },
         ],
@@ -44,11 +45,12 @@ prog
           return this.map(names); // so we can actually get at the value
         }
       });
+      // prompt.run().then(console.log)
       const { eject } = await import('./eject')
-      prompt.run().then((selectedFiles: Record<string, string>) => {
-        Object.entries(selectedFiles).forEach(eject)
-      })
-        .catch(console.error);
+      const selectedFiles: Record<string, string> = await prompt.run()
+      for (let arr of Object.entries(selectedFiles)) {
+        await eject(arr)
+      }
     })
 
 prog

@@ -1,12 +1,22 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import chalk from 'chalk'
+// @ts-ignore
+import { Confirm } from 'enquirer'
 
-export function eject([_sourceFile, destinationPath]: string[]) {
+export async function eject([_sourceFile, destinationPath]: string[]) {
   const sourceFile = path.resolve(__dirname, '../ejectableFiles/' + _sourceFile)
   if (fs.existsSync(sourceFile)) {
     try {
       ensureDirectoryExistence(destinationPath)
+      if (fs.existsSync(destinationPath)) {
+        const prompt = new Confirm({
+          name: 'question',
+          message: `A file exists at ${chalk.cyan(destinationPath)}. Are you sure you want to overwrite? (y/N)`
+        });
+        const answer = await prompt.run()
+        if (answer) return // dont override
+      }
       fs.copyFileSync(sourceFile, destinationPath);
       console.log(`${chalk.green('copied')} ${chalk.yellow(sourceFile)} to ${chalk.yellow(destinationPath)}`)
     } catch(err) {
