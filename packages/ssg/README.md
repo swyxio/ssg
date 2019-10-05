@@ -4,7 +4,14 @@ a very experimental static site generator overlay on top of Sapper. For a simple
 
 https://www.youtube.com/watch?v=o_o0PAts9Gg&feature=youtu.be
 
-Because Sapper needs fixes to support static export at scale, we use a light fork of Sapper (https://github.com/sw-yx/sapper) instead of sapper itself. Hopefully this fork will not be necessary in future, but for now we need these fixes for ssg to work.
+Because Sapper needs fixes to support static export at scale, and moves too slowly for the development of this project, we use a light fork of Sapper (https://github.com/sw-yx/sapper) instead of sapper itself. Hopefully this fork will not be necessary in future, but for now we need these fixes for ssg to work. We aim to keep this fork a superset of sapper as much as possible.
+
+## Example usage
+
+Active Codebases you can see this project in use:
+
+- https://github.com/sw-yx/swyxdotio
+- https://github.com/sveltejs/community
 
 ## Installation
 
@@ -12,7 +19,17 @@ Because Sapper needs fixes to support static export at scale, we use a light for
 yarn add @ssgjs/sapper svelte ssg
 ```
 
-## Fallbacks
+## Usage and CLI API
+
+- `ssg eject` - scaffold out fallback files used by `ssg`
+- `ssg dev` - same as sapper dev, runs data pipeline specified in `ssg.config.js` and watches those files
+- `ssg export` - same as sapper export, runs data pipeline specified in `ssg.config.js`
+
+## Zero Config
+
+By default, `ssg` works as a simple zero config layer over `sapper`. In fact, for the time being, `ssg` will endeavor to be a `sapper` superset as far as possible. It uses the programmatic api behind the cli commands, adding some functionatlity in [the `@ssgjs/sapper` fork](https://www.npmjs.com/package/@ssgjs/sapper) of sapper.
+
+## Fallbacks and `ssg eject`
 
 `ssg` makes these Sapper files optional:
 
@@ -22,7 +39,20 @@ yarn add @ssgjs/sapper svelte ssg
 - `src/template.html`
 - `rollup.config.js`
 
-## What it expects
+They are located in the [ejectableFiles folder](./ejectableFiles).
+
+However, you can scaffold out these files with the `ssg eject` command:
+
+```bash
+$ yarn ssg eject
+✔ Pick files to copy out · template.html, client.js
+✔ A file exists at src/template.html. Are you sure you want to overwrite? (y/N) (y/N) · true
+✔ A file exists at src/client.js. Are you sure you want to overwrite? (y/N) (y/N) · false
+copied /Users/swyx/Work/community/node_modules/ssg/ejectableFiles/client.js to src/client.js
+```
+
+
+## Generating pages from data
 
 1. if you need to get data, you will have a `src/routes/data/[ssgData].json.js` file in your main Sapper project, that looks like this:
 
@@ -106,8 +136,7 @@ In your templates, you may now query this data at any time:
 </script>
 ```
 
-
-## What it does
+## `ssg dev`
 
 Under the hood, `ssg` runs `sapper dev` for you, and watches and reloads it whenever you change your config or contents folder.
 

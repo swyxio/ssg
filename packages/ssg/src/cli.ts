@@ -29,7 +29,7 @@ prog
     // async (opts: {}) => {
     async () => {
       const prompt = new MultiSelect({
-        initial:[0, 1],
+        // initial:[0, 1], // we could set default files to pick but choosing not to for now
         name: 'files',
         message: 'Pick files to copy out',
         choices: [
@@ -48,7 +48,11 @@ prog
       // prompt.run().then(console.log)
       const { eject } = await import('./eject')
       const selectedFiles: Record<string, string> = await prompt.run()
-      for (let arr of Object.entries(selectedFiles)) {
+      const entries = Object.entries(selectedFiles)
+      if (entries.length < 1) {
+        console.warn('no files selected')
+      }
+      for (let arr of entries) {
         await eject(arr)
       }
     })
