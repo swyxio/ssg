@@ -4,7 +4,7 @@ import * as path from 'path'
 
 
 export function eject([_sourceFile, destinationPath]: string[]) {
-  const sourceFile = path.resolve(__dirname, '../../runtime/internal/' + _sourceFile)
+  const sourceFile = path.resolve(__dirname, '../ejectableFiles/' + _sourceFile)
   if (fs.existsSync(sourceFile)) {
     console.log({sourceFile, destinationPath})
     try {
