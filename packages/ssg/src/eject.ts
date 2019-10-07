@@ -44,7 +44,7 @@ async function eject([_sourceFile, destinationPath]: string[]) {
       if (fs.existsSync(destinationPath)) {
         const prompt = new Confirm({
           name: 'question',
-          message: `A file exists at ${chalk.cyan(destinationPath)}. Are you sure you want to overwrite? (y/N)`
+          message: `A file exists at ${chalk.cyan(destinationPath)}. Are you sure you want to overwrite?`
         });
         const answer = await prompt.run()
         if (!answer) return // dont override
