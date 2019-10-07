@@ -669,10 +669,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.3.tgz#7a56e747ec94622e8513b406c53cc1729799de09"
   integrity sha512-Uom7l6OeP6vcf85lMImelYu5WKVWjXyhkpi9WsRdRzlJFJFPVhjBtBCktgDUj7dk1N5FURUdegSZ5XOjxf8JZg==
 
-"@ssgjs/sapper@^0.27.9-fork.9":
-  version "0.27.9-fork.9"
-  resolved "https://registry.yarnpkg.com/@ssgjs/sapper/-/sapper-0.27.9-fork.9.tgz#850b7165fe8dcd4cf5cbf2d705d450d269359e87"
-  integrity sha512-qNQE1Xw8f3MTl2o1fCJc4eel7jpLgt2Lmh65t06vhrSs3X6UEjakm6BwhBtuuT1AU4+3QTbNNbbHiWBx3Ykd5w==
+"@ssgjs/sapper@^0.27.9-fork.10":
+  version "0.27.9-fork.10"
+  resolved "https://registry.yarnpkg.com/@ssgjs/sapper/-/sapper-0.27.9-fork.10.tgz#441868fe39faece21fbeba408a7b117fcca5e390"
+  integrity sha512-rH4Ld6WuIUrQ8yZ2W48abk2mDmCpbPsf7EtPJipDFxKhvgoCOroK1h8herxj+CB/KzwA0vx1GAcZ0NZlb2KAdw==
   dependencies:
     "@babel/core" "^7.6.2"
     compression "^1.7.4"
