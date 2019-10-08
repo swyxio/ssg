@@ -1,6 +1,6 @@
 {
   "name": "ssg",
-  "version": "0.0.36",
+  "version": "0.0.38",
   "license": "MIT",
   "bin": {
     "ssg": "./ssg"
@@ -20,7 +20,7 @@
     "readConfig.js"
   ],
   "dependencies": {
-    "@ssgjs/sapper": "^0.27.9-fork.10",
+    "@ssgjs/sapper": "^0.27.9-fork.12",
     "chalk": "^2.4.2",
     "chokidar": "^3.0.2",
     "enquirer": "^2.3.2",
