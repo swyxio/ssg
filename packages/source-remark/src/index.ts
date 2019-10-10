@@ -49,7 +49,7 @@ let _preset = {
 }
 
 type PluginOpts = {
-  dirPath: string
+  dirPath?: string
   filterType: 'all' | 'current' | undefined
   modifyRecognizedExtensions?: string
   modifyRemarkConfig?: string

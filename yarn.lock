@@ -669,10 +669,18 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.3.tgz#7a56e747ec94622e8513b406c53cc1729799de09"
   integrity sha512-Uom7l6OeP6vcf85lMImelYu5WKVWjXyhkpi9WsRdRzlJFJFPVhjBtBCktgDUj7dk1N5FURUdegSZ5XOjxf8JZg==
 
-"@ssgjs/sapper@^0.27.9-fork.10":
-  version "0.27.9-fork.10"
-  resolved "https://registry.yarnpkg.com/@ssgjs/sapper/-/sapper-0.27.9-fork.10.tgz#441868fe39faece21fbeba408a7b117fcca5e390"
-  integrity sha512-rH4Ld6WuIUrQ8yZ2W48abk2mDmCpbPsf7EtPJipDFxKhvgoCOroK1h8herxj+CB/KzwA0vx1GAcZ0NZlb2KAdw==
+"@sindresorhus/slugify@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@sindresorhus/slugify/-/slugify-0.9.1.tgz#892ad24d70b442c0a14fe519cb4019d59bc5069f"
+  integrity sha512-b6heYM9dzZD13t2GOiEQTDE0qX+I1GyOotMwKh9VQqzuNiVdPVT8dM43fe9HNb/3ul+Qwd5oKSEDrDIfhq3bnQ==
+  dependencies:
+    escape-string-regexp "^1.0.5"
+    lodash.deburr "^4.1.0"
+
+"@ssgjs/sapper@^0.27.9-fork.12":
+  version "0.27.9-fork.12"
+  resolved "https://registry.yarnpkg.com/@ssgjs/sapper/-/sapper-0.27.9-fork.12.tgz#bf5dfcbf6d21df4b517ed1fbda0f0ca61806ec90"
+  integrity sha512-CDfgl7sgfArWlv6J1xYgucaKCFpIVz2RhO4vb2gCFQF+01AIthJtG0sLDWQIFOnyVLehSud+iB04emmY02nH+A==
   dependencies:
     "@babel/core" "^7.6.2"
     compression "^1.7.4"
@@ -2222,6 +2230,11 @@ load-json-file@^4.0.0:
     pify "^3.0.0"
     strip-bom "^3.0.0"
 
+lodash.deburr@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/lodash.deburr/-/lodash.deburr-4.1.0.tgz#ddb1bbb3ef07458c0177ba07de14422cb033ff9b"
+  integrity sha1-3bG7s+8HRYwBd7oH3hRCLLAz/5s=
+
 lodash.uniqby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.uniqby/-/lodash.uniqby-4.7.0.tgz#d99c07a669e9e6d24e1362dfe266c67616af1302"
@@ -3461,11 +3474,6 @@ sirv@^0.4.0, sirv@^0.4.2:
   dependencies:
     "@polka/url" "^0.5.0"
     mime "^2.3.1"
-
-slugify@^1.3.5:
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.3.5.tgz#90210678818b6d533cb060083aed0e8238133508"
-  integrity sha512-5VCnH7aS13b0UqWOs7Ef3E5rkhFe8Od+cp7wybFv5mv/sYSRkucZlJX0bamAJky7b2TTtGvrJBWVdpdEicsSrA==
 
 source-map-support@~0.5.10, source-map-support@~0.5.12:
   version "0.5.13"
