@@ -1,21 +1,13 @@
 const yaml = require('js-yaml')
 const fs = require('fs')
 const path = require('path')
-// const slugify = require('@sindresorhus/slugify')
-
+const slugify = require('@sindresorhus/slugify')
 const { promisify } = require('util')
 const readdir = promisify(fs.readdir)
 const stat = promisify(fs.stat)
-// const lstat = promisify(fs.lstat)
 
 const tob64 = (str: string) => Buffer.from(str).toString('base64')
 const fromb64 = (str: string) => Buffer.from(str, 'base64').toString()
-
-// export function extractSlugObjectFromArray(arr: { slug: string }[]) {
-//   let obj = {}
-//   arr.forEach((item) => (obj[item.slug] = item))
-//   return obj
-// }
 
 /**
  *
@@ -23,48 +15,23 @@ const fromb64 = (str: string) => Buffer.from(str, 'base64').toString()
  *
  */
 
-let defaultRecognizedExtensions = ['.yml', '.yaml']
-
-// export function loadYaml(ymlpath: string) {
-//   const fullData = yaml.safeLoad(fs.readFileSync(path.resolve(ymlpath), 'utf8'))
-//   if (Array.isArray(fullData) && fullData.length && fullData[0].title) {
-//     // enrich with slug
-//     fullData.forEach((col, i) => {
-//       col.slug = col.title ? slugify(col.title) : slugify(ymlpath) + i
-//     })
-//   }
-//   return fullData
-// }
-
-// export function filterDataArray(fullData: object[], opts: { filterForFields?: string[] }) {
-//   let filteredData = fullData
-//   if (opts.filterForFields && Array.isArray(opts.filterForFields)) {
-//     filteredData = []
-//     fullData.forEach((item, i) => {
-//       const newItem = {}
-//       opts.filterForFields &&
-//         opts.filterForFields.forEach((field) => {
-//           newItem[field] = item[field]
-//         })
-//       filteredData.push(newItem)
-//     })
-//   }
-//   return filteredData
-// }
-
+export let defaultRecognizedExtensions = ['.yml', '.yaml']
 
 type PluginOpts = {
   dirPath: string
   recognizedExtensions?: string[]
-  // modifyRemarkConfig?: string
-  // // onCreateIndex?: (index: {
-  // //     [slug: string]: SSGYamlPluginFile;
-  // // }) => Promise<void>
 }
-type SSGYamlPluginFile = { uid: string; createdAt: Date; modifiedAt: Date; metadata: any }
-module.exports = function(opts: PluginOpts) {
+type SSGYamlPluginFile = {
+  uid: string
+  createdAt: Date
+  modifiedAt: Date
+  metadata: any
+  file: string
+  filePath: string
+  data?: any
+}
+export default function SSGYamlPlugin(opts: PluginOpts) {
   if (typeof opts.dirPath === 'undefined') throw new Error('dirPath not supplied to remark plugin')
-  if (!Array.isArray(opts.recognizedExtensions)) throw new Error('opts.recognizedExtensions must be an array of strings')
   let recognizedExtensions = opts.recognizedExtensions || defaultRecognizedExtensions
   // flattens all directories below the dirPath
   // is recursive!
@@ -81,6 +48,8 @@ module.exports = function(opts: PluginOpts) {
         if (!recognizedExtensions.includes(path.extname(file))) return // skip
         return [
           {
+            file,
+            filePath,
             uid: tob64(filePath),
             createdAt: st.birthtime,
             modifiedAt: st.mtime,
@@ -90,34 +59,17 @@ module.exports = function(opts: PluginOpts) {
     }
     const arrs: (SSGYamlPluginFile[])[] = await Promise.all(files.map((file: string) => getStats(file, recursiveDir)))
     const strArr = [] as SSGYamlPluginFile[]
-    let index = strArr.concat.apply([], arrs) // ghetto flatten
-    index = index
+    let fileArr = strArr.concat
+      .apply([], arrs) // ghetto flatten
       .filter(Boolean)
-      .map((file) => {
-        // const temp = 
-        // const { attributes: metadata } = frontMatter(temp)
-        // if (!metadata) return // require metadata
-        // if (!metadata.title) return // require title
-        // if (metadata.published === false) return // if published is false
-        // let pubdate = metadata.date || new Date().toString().slice(4, 15)
-        // const date = new Date(`${pubdate} EDT`) // cheeky hack
-        // metadata.pubdate = pubdate
-        // metadata.date = new Date(pubdate)
-        // metadata.dateString = date.toDateString()
-        // file.metadata = metadata
-        return yaml.safeLoad(fs.readFileSync(fromb64(file.uid), 'utf-8'))
-      })
-      .filter(notEmpty)
-    // // i dont really use this yet
-    // if (opts.onCreateIndex) {
-    //   await opts.onCreateIndex(index) // optional logging
-    // }
+    let index = {}
+    fileArr.forEach((obj) => {
+      const { filePath } = obj
+      const baseName = slugify(filePath)
+      obj.data = yaml.safeLoad(fs.readFileSync(filePath, 'utf-8'))
+      index[baseName] = obj
+    })
     return index
-  }
-
-  // https://stackoverflow.com/questions/43118692/typescript-filter-out-nulls-from-an-array
-  function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-    return value !== null && value !== undefined
   }
 
   async function getDataSlice(uid: string) {
