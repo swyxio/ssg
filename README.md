@@ -8,7 +8,7 @@ this is a monorepo for a Sapper Site Generator and related packages. Check READM
 
 We also have an `examples` folder but its kinda inactive right now.
 
-## Roadmap
+## Project Roadmap
 
 I have been dragging my feet on SSG mostly because I wish someone else was working on it rather than me (it will never make money and I don't have time for it).
 
@@ -30,9 +30,10 @@ whatever i have now, the Sapper-based slow monstrosity. I can add:
 
 What I want SSG to launch with is:
 
+- 0kb of JS for a page that doesnt use it
 - visual editor? use netlifycms? fork sapper studio?
 - incremental builds
-- ludicrous speed. this probably means not using Sapper, and possibly using Rust.
+- ludicrous speed. this probably means not using Sapper, and possibly using Rust/WASM.
 - ejectable themes
 - preprocessed typescript and postcss
 - Zero config:
@@ -46,7 +47,6 @@ open questions:
 
 - dev mode?
 - no clientside routing?
-- 0kb of JS for a page that doesnt use it
 - graphql?
 - 404 search
 - react import path?
@@ -60,6 +60,7 @@ I actually wish i could work on this earlier, but Netlify doesn't support datast
 
 - serverless serving if updates are found (so you get instant refresh)
 - smart clientside routing? need to learn a lot more about this
+- service worker layer?
 
 TODO: check if there's a way to see if there's a new version of a page updated
 

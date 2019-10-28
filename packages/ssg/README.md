@@ -13,6 +13,8 @@ Active Codebases you can see this project in use:
 - https://github.com/sw-yx/swyxdotio
 - https://github.com/sveltejs/community
 
+In v0.x we reserve the right to break APIs without warning. Get involved if you need advance warning.
+
 ## Installation
 
 ```bash
@@ -23,19 +25,19 @@ Svelte and @ssgjs/sapper are included as direct dependencies, however feel free 
 
 ## Contributing
 
-This project needs feedback and maintainers.
+This project needs feedback and maintainers. In fact if you'd like to take it over please be my guest. I don't have time for this. I'm only doing it cause no one else has.
 
-this is a very nascent project, you'll run into bugs. report them please and also help add tests. if you have feature suggestions please open an issue first before PR.
+This is a very nascent project, you'll run into bugs. report them please and also help add tests. If you have feature suggestions please open an issue first to see if it is something we want, before wasting time on a PR.
 
 ## Usage and CLI API
 
 - `ssg eject` - scaffold out fallback files used by `ssg`
-- `ssg dev` - same as sapper dev, runs data pipeline specified in `ssg.config.js` and watches those files
-- `ssg export` - same as sapper export, runs data pipeline specified in `ssg.config.js`
+- `ssg dev` - same as `sapper dev`, runs data pipeline specified in `ssg.config.js` and watches those files
+- `ssg export` - same as `sapper export`, runs data pipeline specified in `ssg.config.js` and exports the sapper app as a static site.
 
 ## Zero Config
 
-By default, `ssg` works as a simple zero config layer over `sapper`. In fact, for the time being, `ssg` will endeavor to be a `sapper` superset as far as possible. It uses the programmatic api behind the cli commands, adding some functionatlity in [the `@ssgjs/sapper` fork](https://www.npmjs.com/package/@ssgjs/sapper) of sapper.
+By default, `ssg` works as a simple zero config layer over `sapper`. In fact, for the time being, `ssg` will endeavor to be a `sapper` superset as far as possible. It uses the programmatic api behind the cli commands, adding some functionality in [the `@ssgjs/sapper` fork](https://www.npmjs.com/package/@ssgjs/sapper) of sapper.
 
 ## Fallbacks and `ssg eject`
 
@@ -58,7 +60,6 @@ $ yarn ssg eject
 ✔ A file exists at src/client.js. Are you sure you want to overwrite? (y/N) · true
 copied /Users/swyx/Work/community/node_modules/ssg/ejectableFiles/client.js to src/client.js
 ```
-
 
 ## Generating pages from data
 
@@ -171,5 +172,5 @@ exports.plugins = {
 
 ## Deploying
 
-You can run `ssg export` to export just like `sapper export` does. for convenience, I've included a `neltify.toml` config so you dont have to look it up. Just `ssg eject`.
+You can run `ssg export` to export just like `sapper export` does. for convenience, I've included a `netlify.toml` config so you dont have to look it up. Just `ssg eject`.
 
