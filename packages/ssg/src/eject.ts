@@ -3,7 +3,7 @@ import * as path from 'path'
 import chalk from 'chalk'
 // @ts-ignore
 import { Confirm, MultiSelect } from 'enquirer'
-import {ensureDirectoryExistence} from './utils'
+import { ensureDirectoryExistence } from './utils'
 
 export async function ejectCommand() {
   const prompt = new MultiSelect({
@@ -22,9 +22,9 @@ export async function ejectCommand() {
       { name: 'layout.svelte', value: 'src/routes/_layout.svelte', hint: `(unused) layout.svelte` },
     ],
     result(names: any) {
-      return this.map(names); // so we can actually get at the value
-    }
-  });
+      return this.map(names) // so we can actually get at the value
+    },
+  })
   // prompt.run().then(console.log)
   const selectedFiles: Record<string, string> = await prompt.run()
   const entries = Object.entries(selectedFiles)
@@ -44,24 +44,23 @@ async function eject([_sourceFile, destinationPath]: string[]) {
       if (fs.existsSync(destinationPath)) {
         const prompt = new Confirm({
           name: 'question',
-          message: `A file exists at ${chalk.cyan(destinationPath)}. Are you sure you want to overwrite?`
-        });
+          message: `A file exists at ${chalk.cyan(destinationPath)}. Are you sure you want to overwrite?`,
+        })
         const answer = await prompt.run()
         if (!answer) return // dont override
         try {
-          fs.renameSync( destinationPath, destinationPath + '.old');
+          fs.renameSync(destinationPath, destinationPath + '.old')
         } catch (err) {
           console.log('renaming failed. copying and overwriting instead.')
-          fs.copyFileSync( destinationPath, destinationPath + '.copy');
+          fs.copyFileSync(destinationPath, destinationPath + '.copy')
         }
       }
-      fs.copyFileSync(sourceFile, destinationPath);
+      fs.copyFileSync(sourceFile, destinationPath)
       console.log(`${chalk.green('copied')} ${chalk.yellow(sourceFile)} to ${chalk.yellow(destinationPath)}`)
-    } catch(err) {
+    } catch (err) {
       console.error('error copying file to ' + destinationPath)
     }
   } else {
     console.log(`file ${sourceFile} not found...`)
   }
 }
-

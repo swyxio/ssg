@@ -1,7 +1,8 @@
 import chokidar from 'chokidar'
 import fs from 'fs'
 import path from 'path'
-import {ensureDirectoryExistence} from './utils'
+import { ensureDirectoryExistence } from './utils'
+import coreData from './coreData'
 type Dict = Record<string, any>
 type SSGConfig = {
   /** space separated places to watch for reloads. default 'content' */
@@ -10,6 +11,7 @@ type SSGConfig = {
   plugins: Dict
   createIndex(mainIndex: Dict): Promise<{ [key: string]: any }>
   postExport: (index: { [key: string]: any }) => void
+  coreDataOpts: any
 }
 
 /**
@@ -18,14 +20,24 @@ type SSGConfig = {
  *
  */
 export async function getSSGDataOnce(ssgConfig: SSGConfig, sapperDir: string) {
-  let mainIndex = {}
+  let mainIndex = {} as { [key: string]: any }
   const plugins = ssgConfig.plugins
+  if (plugins.ssgCoreData) throw new Error('plugin named ssgCoreData found, this is a reserved name')
   if (plugins) {
+    // todo: parallelize
     for (let temp of Object.entries(plugins)) {
       const [pluginName, plugin] = temp
       mainIndex[pluginName] = await plugin.createIndex()
     }
   }
+
+  /**
+   * Add Core Markdown Data!
+   */
+  // TODO: understand input folder/file/glob
+  // TODO: exempt ignored files
+  const coreDataPlugin = coreData(ssgConfig.coreDataOpts)
+  mainIndex.ssgCoreData = coreDataPlugin.createIndex()
 
   if (ssgConfig.createIndex) {
     mainIndex = await ssgConfig.createIndex(mainIndex)

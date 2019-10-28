@@ -1,6 +1,7 @@
 // just reads the user's ssg config
 const path = require('path')
 const fs = require('fs')
+const coreData = require('./dist/coreData')
 
 // todo: actually use opts.ssgConfig
 const configPath = path.resolve(process.cwd(), 'ssg.config.js')
@@ -20,6 +21,10 @@ if (fs.existsSync(configPath)) {
 
   getDataSlice = async (key, uid) => {
     const plugins = ssgConfig.plugins
+    if (key === 'ssgCoreData') {
+      // specialcase handling for ssgCoreData
+      return coreData(ssgConfig.coreDataOpts).getDataSlice(uid)
+    }
     if (plugins) {
       if (plugins[key]) {
         return plugins[key].getDataSlice(uid)

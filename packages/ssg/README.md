@@ -147,6 +147,8 @@ In your templates, you may now query this data at any time:
 </script>
 ```
 
+When we drop Sapper we'll likely have a more ergonomic api for this.
+
 ## `ssg dev`
 
 Under the hood, `ssg` runs `sapper dev` for you, and watches and reloads it whenever you change your config or contents folder.

@@ -19,15 +19,13 @@ if (process.argv[2] === 'start') {
 
 const start = Date.now()
 
-
 prog
   .command('eject')
   .describe('Copy out fallback files')
-  .action(
-    async () => {
-      const { ejectCommand } = await import('./eject')
-      await ejectCommand()
-    })
+  .action(async () => {
+    const { ejectCommand } = await import('./eject')
+    await ejectCommand()
+  })
 
 prog
   .command('dev')
@@ -273,6 +271,7 @@ prog
   .option('--build-dir', 'Intermediate build directory', '__sapper__/build')
   .option('--ext', 'Custom page route extensions (space separated)', '.svelte .svexy .html')
   .option('--entry', 'Custom entry points (space separated)', '/')
+  .option('--ssgConfig', 'path to your SSG config file', 'ssg.config.js')
   .action(
     async (
       dest: string = '__sapper__/export',
