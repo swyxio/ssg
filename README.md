@@ -2,7 +2,7 @@
 
 this is a monorepo for a Sapper Site Generator and related packages. Check README's inside `/packages` for more info on each. In particular:
 
-- [/packages/ssg](/packages/ssg/README.md) is the primary package
+- **[/packages/ssg](/packages/ssg/README.md) is the primary package**. Please click thru and read this to get started.
 - [/packages/source-yaml](/packages/source-yaml/README.md) (status: active)
 - [/packages/source-remark](/packages/source-remark/README.md) (status: active)
 
