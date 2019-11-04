@@ -4,7 +4,7 @@ import chalk from 'chalk';
 // @ts-ignore
 import { Confirm, MultiSelect } from 'enquirer';
 import { ensureDirectoryExistence } from './utils';
-const debug = require('debug')('ssg:eject')
+const debug = require('debug')('ssg:eject');
 
 export async function ejectCommand() {
   const prompt = new MultiSelect({
@@ -16,7 +16,8 @@ export async function ejectCommand() {
       {
         name: '[ssgData].json.js',
         value: 'src/routes/data/[ssgData].json.js',
-        hint: `ssg's default data route`
+        hint: `ssg's default data route`,
+        enabled: true
       },
       {
         name: 'sampleIndex.svelte',
@@ -37,6 +38,11 @@ export async function ejectCommand() {
         name: 'rollup.config.js',
         value: 'rollup.config.js',
         hint: 'the fallback rollup config used in ssg'
+      },
+      {
+        name: 'svelte.config.js',
+        value: 'svelte.config.js',
+        hint: `svelte.config.js required for svelte-vscode to properly typecheck svelte components`
       },
       { name: 'client.js', value: 'src/client.js', hint: `sapper's client.js` },
       { name: 'server.js', value: 'src/server.js', hint: `sapper's server.js` },
@@ -81,7 +87,7 @@ async function eject([_sourceFile, destinationPath]: string[]) {
     __dirname,
     '../ejectableFiles/' + _sourceFile
   );
-  debug(`ejecting: from ${_sourceFile} to ${destinationPath}`)
+  debug(`ejecting: from ${_sourceFile} to ${destinationPath}`);
   if (fs.existsSync(sourceFile)) {
     try {
       ensureDirectoryExistence(destinationPath);
