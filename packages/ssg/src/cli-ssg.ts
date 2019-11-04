@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { ensureDirectoryExistence } from './utils';
 import coreData from './coreData';
+const debug = require('debug')('ssg:cli-ssg')
 type Dict = Record<string, any>;
 type SSGConfig = {
   /** space separated places to watch for reloads. default 'content' */
@@ -40,6 +41,7 @@ export async function getSSGDataOnce(
    */
   // TODO: understand input folder/file/glob
   // TODO: exempt ignored files
+  debug('getting core data index')
   const coreDataPlugin = coreData(ssgConfig && ssgConfig.coreDataOpts);
 
   if (ssgConfig && ssgConfig.createIndex) {
@@ -50,6 +52,7 @@ export async function getSSGDataOnce(
   const dotFolderDataPath = path.join(dotFolderPath, 'data.json');
   ensureDirectoryExistence(dotFolderDataPath);
   if (!fs.existsSync(dotFolderPath)) fs.mkdirSync(dotFolderPath);
+  debug('saving core data index')
   fs.writeFileSync(dotFolderDataPath, JSON.stringify(mainIndex));
   return mainIndex;
 
@@ -76,6 +79,7 @@ export function readSSGConfig(ssgConfigPath: string): SSGConfig | undefined {
     );
     return;
   }
+  debug('reading ssg config')
   let ssgConfig = require(path.resolve(ssgConfigPath));
   ssgConfig.configPath = ssgConfigPath;
   ssgConfig.watchFolders = ssgConfig.watchFolders || 'content';
@@ -109,6 +113,7 @@ export function watchSSGFiles(watcher: any, ssgConfig: Partial<SSGConfig>) {
     );
     return;
   }
+  debug('watching ssg files')
   const chokiwatch = chokidar.watch(filesToWatch);
   chokiwatch
     .on('add', watchHandler('added'))

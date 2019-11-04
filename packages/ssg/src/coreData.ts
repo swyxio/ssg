@@ -9,6 +9,7 @@ const path = require('path');
 const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
 const frontMatter = require('front-matter');
+const debug = require('debug')('ssg:coreData')
 
 /**
  *
@@ -61,7 +62,7 @@ type SSGRemarkPluginFile = {
   modifiedAt: Date;
   metadata: any;
 };
-export default function(opts?: PluginOpts) {
+export default function ssgCoreDataPlugin(opts?: PluginOpts) {
   if (opts === null || opts === undefined) opts = {};
   let startDirPath = opts.dirPath || path.resolve('.');
   if (opts.modifyRecognizedExtensions) {
@@ -78,6 +79,7 @@ export default function(opts?: PluginOpts) {
   // flattens all directories below the dirPath
   // is recursive!
   async function createIndex(recursiveDir = startDirPath) {
+    debug('creating ssgCoreData Index')
     const files = await readdir(recursiveDir);
     const getStats = async (file: string, dirPath: string) => {
       const filePath = path.join(dirPath, file);
@@ -142,6 +144,7 @@ export default function(opts?: PluginOpts) {
   }
 
   async function getDataSlice(slug: string) {
+    debug('reading ssgCoreData slice for ' + slug)
     let filepath = index.find(item => item.slug === slug);
     if (filepath) {
       const md = vfile.readSync(filepath.filePath);

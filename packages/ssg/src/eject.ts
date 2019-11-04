@@ -4,6 +4,7 @@ import chalk from 'chalk';
 // @ts-ignore
 import { Confirm, MultiSelect } from 'enquirer';
 import { ensureDirectoryExistence } from './utils';
+const debug = require('debug')('ssg:eject')
 
 export async function ejectCommand() {
   const prompt = new MultiSelect({
@@ -80,6 +81,7 @@ async function eject([_sourceFile, destinationPath]: string[]) {
     __dirname,
     '../ejectableFiles/' + _sourceFile
   );
+  debug(`ejecting: from ${_sourceFile} to ${destinationPath}`)
   if (fs.existsSync(sourceFile)) {
     try {
       ensureDirectoryExistence(destinationPath);

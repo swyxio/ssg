@@ -11,6 +11,7 @@ import {
   BuildEvent,
   ReadyEvent
 } from './interfaces';
+const debug = require('debug')('ssg:cli')
 
 type TODO_ANY = any;
 
@@ -104,9 +105,12 @@ prog
         let ssgConfigPath = opts.ssgConfig || 'ssg.config.js';
         // warning: opts.ssgConfig doesnt work for the readConfig seciton yet
         // TODO!
+        debug('reading ssg config')
         const ssgConfig = readSSGConfig(ssgConfigPath);
+        debug('getting SSG data Index')
         await getSSGDataOnce(ssgConfig, path.resolve(opts['build-dir'], '../'));
         if (ssgConfig) {
+          debug('getting watching SSG data files...')
           // actually do stuff with it
           watchSSGFiles(watcher, ssgConfig);
         }
@@ -390,12 +394,14 @@ prog
          * verify ssg config exists
          *
          */
+        debug('reading ssg config')
         const { getSSGDataOnce, readSSGConfig } = await import('./cli-ssg');
         let ssgConfigPath = opts.ssgConfig || 'ssg.config.js';
         // warning: opts.ssgConfig doesnt work for the readConfig seciton yet
         // TODO!
         const ssgConfig = readSSGConfig(ssgConfigPath);
         let mainIndex;
+        debug('getting SSG data Index')
         mainIndex = await getSSGDataOnce(
           ssgConfig,
           path.resolve(opts['build-dir'], '../')
@@ -456,6 +462,7 @@ prog
          *
          */
         if (ssgConfig && ssgConfig.postExport && mainIndex) {
+          debug('running ssg postExport')
           await ssgConfig.postExport(mainIndex);
         }
         /**

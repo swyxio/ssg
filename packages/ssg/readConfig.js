@@ -2,11 +2,12 @@
 const path = require('path');
 const fs = require('fs');
 const coreData = require('./dist/coreData').default;
+const debug = require('debug')('ssg:readConfig')
 
 // todo: actually use opts.ssgConfig
 const configPath = path.resolve(process.cwd(), 'ssg.config.js');
 
-console.log('ssg: reading config');
+debug('reading config');
 let ssgConfig;
 try {
   ssgConfig = require(configPath);

@@ -39,6 +39,17 @@ This is a very nascent project, you'll run into bugs. report them please and als
 
 By default, `ssg` works as a simple zero config layer over `sapper`. In fact, for the time being, `ssg` will endeavor to be a `sapper` superset as far as possible. It uses the programmatic api behind the cli commands, adding some functionality in [the `@ssgjs/sapper` fork](https://www.npmjs.com/package/@ssgjs/sapper) of sapper.
 
+## Debugging
+
+ssg uses [`debug`](https://www.npmjs.com/package/debug) to log diagnostic messages. Set a Node env variable to enable this logging:
+
+```bash
+DEBUG=ssg ssg dev
+# or DEBUG=* ssg export
+```
+
+You have a few more degrees of control available incl filtering out messages, look at the `debug` docs for more ideas.
+
 ## Fallbacks and `ssg eject`
 
 `ssg` makes these Sapper files optional:
