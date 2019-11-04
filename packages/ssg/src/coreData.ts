@@ -46,7 +46,7 @@ let _preset = {
 };
 
 export type PluginOpts = {
-  dirPath?: string;
+  coreDataDirPath?: string;
   dateFilterType?: 'all' | 'current';
   modifyRecognizedExtensions?: string;
   modifyRemarkConfig?: string;
@@ -64,7 +64,7 @@ type SSGRemarkPluginFile = {
 };
 export default function ssgCoreDataPlugin(opts?: PluginOpts) {
   if (opts === null || opts === undefined) opts = {};
-  let startDirPath = opts.dirPath || path.resolve('.');
+  let coreDataDirPath = opts.coreDataDirPath || path.resolve('.');
   if (opts.modifyRecognizedExtensions) {
     _recognizedExtensions = produce(
       _recognizedExtensions,
@@ -78,12 +78,12 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
   let index: SSGRemarkPluginFile[];
   // flattens all directories below the dirPath
   // is recursive!
-  async function createIndex(recursiveDir = startDirPath) {
+  async function createIndex(recursiveDir = coreDataDirPath) {
     debug('creating ssgCoreData Index')
     const files = await readdir(recursiveDir);
     const getStats = async (file: string, dirPath: string) => {
       const filePath = path.join(dirPath, file);
-      let shortFilePath = path.parse(path.relative(startDirPath, filePath));
+      let shortFilePath = path.parse(path.relative(coreDataDirPath, filePath));
       shortFilePath = shortFilePath.dir + '/' + shortFilePath.name; // drop the extension, could be '.md' but also anything else
       const st = await stat(filePath);
       if (st.isDirectory()) {

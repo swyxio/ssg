@@ -11,7 +11,7 @@
       return item.uid === params.sampleUID;
     });
     if (res.status === 200) {
-      return this.ssgData(key, post.uid)
+      return this.ssgData({key, id: post.uid})
     } else {
       this.error(res.status, data.message);
     }

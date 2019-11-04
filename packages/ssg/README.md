@@ -39,17 +39,6 @@ This is a very nascent project, you'll run into bugs. report them please and als
 
 By default, `ssg` works as a simple zero config layer over `sapper`. In fact, for the time being, `ssg` will endeavor to be a `sapper` superset as far as possible. It uses the programmatic api behind the cli commands, adding some functionality in [the `@ssgjs/sapper` fork](https://www.npmjs.com/package/@ssgjs/sapper) of sapper.
 
-## Debugging
-
-ssg uses [`debug`](https://www.npmjs.com/package/debug) to log diagnostic messages. Set a Node env variable to enable this logging:
-
-```bash
-DEBUG=ssg ssg dev
-# or DEBUG=* ssg export
-```
-
-You have a few more degrees of control available incl filtering out messages, look at the `debug` docs for more ideas.
-
 ## Fallbacks and `ssg eject`
 
 `ssg` makes these Sapper files optional:
@@ -147,7 +136,7 @@ In your templates, you may now query this data at any time:
 <script context="module">
   export async function preload({ params, query }) {
     cosnt key = 'posts'
-    const res = await this.ssgData(key, params.slug)
+    const res = await this.ssgData({ key, id: params.slug }) // defaults to key: 'ssgCoreData' and id: 'index'
     if (res.status === 200) {
       return data
     } else {
@@ -161,6 +150,15 @@ In your templates, you may now query this data at any time:
 ```
 
 When we drop Sapper we'll likely have a more ergonomic api for this.
+
+## Core Data
+
+As of v0.45 `ssg` now also reads all markdown files in the root directory by default. This is inline with 11ty's practice and is configurable by setting a `coreDataDirPath` string in `ssg.config.js`:
+
+```js
+// example ssg.config.js
+exports.coreDataDirPath = 'content/blog' // defaults to '.'
+```
 
 ## `ssg dev`
 
@@ -189,3 +187,14 @@ exports.plugins = {
 
 You can run `ssg export` to export just like `sapper export` does. for convenience, I've included a `netlify.toml` config so you dont have to look it up. Just `ssg eject`.
 
+
+## Debugging
+
+ssg uses [`debug`](https://www.npmjs.com/package/debug) to log diagnostic messages. Set a Node env variable to enable this logging:
+
+```bash
+DEBUG=ssg ssg dev
+# or DEBUG=* ssg export
+```
+
+You have a few more degrees of control available incl filtering out messages, look at the `debug` docs for more ideas.
