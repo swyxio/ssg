@@ -1,19 +1,15 @@
 var unified = require('unified');
-// var stream = require('unified-stream')
 var vfile = require('to-vfile');
 var report = require('vfile-reporter');
 const { produce } = require('immer');
-
+const slugify = require('@sindresorhus/slugify');
 const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
 const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
-// const lstat = promisify(fs.lstat)
 const frontMatter = require('front-matter');
 
-const tob64 = (str: string) => Buffer.from(str).toString('base64');
-const fromb64 = (str: string) => Buffer.from(str, 'base64').toString();
 /**
  *
  * globals, we may have to make per-invocation in future
@@ -59,13 +55,13 @@ export type PluginOpts = {
   // }) => Promise<void>
 };
 type SSGRemarkPluginFile = {
-  uid: string;
+  slug: string;
+  filePath: string;
   createdAt: Date;
   modifiedAt: Date;
   metadata: any;
 };
 export default function(opts?: PluginOpts) {
-  // console.warn('dirpath not supplied to coreDataOpts, using default')
   if (opts === null || opts === undefined) opts = {};
   let _dirPath = opts.dirPath || path.resolve('.');
   if (opts.modifyRecognizedExtensions) {
@@ -78,6 +74,7 @@ export default function(opts?: PluginOpts) {
     _preset = produce(_preset, opts.modifyRemarkConfig);
   }
 
+  let index: SSGRemarkPluginFile[];
   // flattens all directories below the dirPath
   // is recursive!
   async function createIndex(recursiveDir = _dirPath) {
@@ -87,16 +84,25 @@ export default function(opts?: PluginOpts) {
       const st = await stat(filePath);
       if (st.isDirectory()) {
         if ((file = 'node_modules')) return; // dont go inside node_modules
-        const temp = await createIndex(filePath); // recursion
-        return Object.values(temp); // take it back out of an object into an array
+        // TODO: take an ignore glob and default to node_modules
+        return await createIndex(filePath); // recursion
       } else {
         if (file === '.DS_Store') return; // skip ds store...
         if (!_recognizedExtensions.includes(path.extname(file))) return; // skip
+        const temp = fs.readFileSync(filePath, 'utf-8');
+        const { attributes: metadata } = frontMatter(temp);
+        if (metadata.published === false) return; // dont show if published is false
+        let pubdate = metadata.date || st.birthtime;
+        metadata.pubdate = pubdate;
+        metadata.date = new Date(pubdate);
+        const slug = metadata.slug || metadata.permalink || slugify(filePath);
         return [
           {
-            uid: tob64(filePath),
+            slug,
+            filePath,
             createdAt: st.birthtime,
-            modifiedAt: st.mtime
+            modifiedAt: st.mtime,
+            metadata
           }
         ] as SSGRemarkPluginFile[];
       }
@@ -106,27 +112,13 @@ export default function(opts?: PluginOpts) {
     );
     const arrs: (SSGRemarkPluginFile[])[] = await Promise.all(promises);
     const strArr = [] as SSGRemarkPluginFile[];
-    let index = strArr.concat.apply([], arrs); // ghetto flatten
+    index = strArr.concat.apply([], arrs); // ghetto flatten
     index = index
       .filter(Boolean)
-      .map(file => {
-        const temp = fs.readFileSync(fromb64(file.uid), 'utf-8');
-        const { attributes: metadata } = frontMatter(temp);
-        // if (!metadata) return; // require metadata
-        // if (!metadata.title) return; // require title
-        if (metadata.published === false) return; // if published is false
-        let pubdate = metadata.date || new Date().toString().slice(4, 15);
-        const date = new Date(`${pubdate} EDT`); // cheeky hack
-        metadata.pubdate = pubdate;
-        metadata.date = new Date(pubdate);
-        metadata.dateString = date.toDateString();
-        file.metadata = metadata;
-        return file;
-      })
-      .filter(notEmpty);
-    // .sort((a, b) => {
-    //   return a!.metadata.pubdate < b!.metadata.pubdate ? 1 : -1;
-    // })
+      .filter(notEmpty)
+      .sort((a, b) => {
+        return a!.metadata.pubdate < b!.metadata.pubdate ? 1 : -1;
+      });
     // .filter(x =>
     //   opts.dateFilterType === 'all'
     //     ? true
@@ -146,18 +138,22 @@ export default function(opts?: PluginOpts) {
     return value !== null && value !== undefined;
   }
 
-  async function getDataSlice(uid: string) {
-    const filepath = fromb64(uid);
-    const md = vfile.readSync(filepath);
-    const file = await unified()
-      .use(_preset)
-      .process(md)
-      .catch((err: Error) => {
-        console.error(report(md));
-        throw err;
-      });
-    file.extname = '.html';
-    return file.toString();
+  async function getDataSlice(slug: string) {
+    let filepath = index.find(item => item.slug === slug);
+    if (filepath) {
+      const md = vfile.readSync(filepath.filePath);
+      const file = await unified()
+        .use(_preset)
+        .process(md)
+        .catch((err: Error) => {
+          console.error(report(md));
+          throw err;
+        });
+      file.extname = '.html';
+      return file.toString();
+    } else {
+      throw new Error('no file for ' + slug + ' found');
+    }
   }
 
   return {
