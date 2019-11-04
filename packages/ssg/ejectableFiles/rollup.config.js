@@ -5,6 +5,7 @@ import resolve from 'rollup-plugin-node-resolve'
 import replace from 'rollup-plugin-replace'
 import commonjs from 'rollup-plugin-commonjs'
 import svelte from 'rollup-plugin-svelte'
+import sveltePreprocess from 'svelte-preprocess'
 import babel from 'rollup-plugin-babel'
 import json from 'rollup-plugin-json'
 import { terser } from 'rollup-plugin-terser'
@@ -35,17 +36,29 @@ const onwarn = (warning, onwarn) =>
 const dedupe = (importee) => importee === 'svelte' || importee.startsWith('svelte/')
 
 const extensions = ['.svelte', '.svexy', '.svx', '.md']
-const preprocess = mdsvex({
-  // extension: '.svexy', // the default is '.svexy', if you lack taste, you might want to change it
-  // layout: path.join(__dirname, './src/routes/_layout.svelte'), // this needs to be an absolute path
-  // parser: md => md.use(SomePlugin), // you can add markdown-it plugins if the feeling takes you
-  // // you can add markdown-it options here, html is always true
-  // markdownOptions: {
-  // 	typographer: true,
-  // 	linkify: true,
-  // 	highlight: (str, lang) => whatever(str, lang), // this should be a real function if you want to highlight
-  // },
-})
+const preprocess = [
+  sveltePreprocess({ 
+    /* svelte-preprocess options */ 
+    // https://github.com/kaisermann/svelte-preprocess/blob/4287ee8fc57132688d9e7a22bf313bd91b6afcd7/README.md#options
+    aliases: [
+      ["ts", 'typescript']
+    ],
+    typescript: {
+      transpileOnly: true
+    }
+  }),
+  mdsvex({
+    // extension: '.svexy', // the default is '.svexy', if you lack taste, you might want to change it
+    // layout: path.join(__dirname, './src/routes/_layout.svelte'), // this needs to be an absolute path
+    // parser: md => md.use(SomePlugin), // you can add markdown-it plugins if the feeling takes you
+    // // you can add markdown-it options here, html is always true
+    // markdownOptions: {
+    // 	typographer: true,
+    // 	linkify: true,
+    // 	highlight: (str, lang) => whatever(str, lang), // this should be a real function if you want to highlight
+    // },
+  })
+]
 
 const defaultRollupConfig = {
   client: {
