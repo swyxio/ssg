@@ -2,7 +2,7 @@ import chokidar from 'chokidar';
 import fs from 'fs';
 import path from 'path';
 import { ensureDirectoryExistence } from './utils';
-import coreData from './coreData';
+import coreData, { PluginOpts } from './coreData';
 const debug = require('debug')('ssg:cli-ssg');
 type Dict = Record<string, any>;
 type SSGConfig = {
@@ -12,7 +12,7 @@ type SSGConfig = {
   plugins: Dict;
   createIndex(mainIndex: Dict): Promise<{ [key: string]: any }>;
   postExport: (index: { [key: string]: any }) => void;
-  coreDataOpts: any;
+  coreDataOpts: PluginOpts;
 };
 
 /**
@@ -25,16 +25,6 @@ export async function getSSGDataOnce(
   sapperDir: string = process.cwd()
 ) {
   let mainIndex = {} as { [key: string]: any };
-  const plugins = ssgConfig && ssgConfig.plugins;
-  if (plugins && plugins.ssgCoreData)
-    throw new Error('plugin named ssgCoreData found, this is a reserved name');
-  if (plugins) {
-    // todo: parallelize
-    for (let temp of Object.entries(plugins)) {
-      const [pluginName, plugin] = temp;
-      mainIndex[pluginName] = await plugin.createIndex();
-    }
-  }
 
   /**
    * Add Core Markdown Data!
@@ -44,6 +34,21 @@ export async function getSSGDataOnce(
   debug('getting core data index');
   const coreDataPlugin = coreData(ssgConfig && ssgConfig.coreDataOpts);
   mainIndex.ssgCoreData = await coreDataPlugin.createIndex();
+
+  /**
+   * plugins
+   */
+  const plugins = ssgConfig && ssgConfig.plugins;
+  if (plugins && plugins.ssgCoreData)
+    throw new Error('plugin named ssgCoreData found, this is a reserved name');
+  if (plugins) {
+    // todo: parallelize
+    for (let temp of Object.entries(plugins)) {
+      const [pluginName, plugin] = temp;
+      // note: order technically matters, but plugins supposed to be orthogonal
+      mainIndex[pluginName] = await plugin.createIndex(mainIndex);
+    }
+  }
 
   debug('running ssg.config.js createIndex');
   if (ssgConfig && ssgConfig.createIndex) {
@@ -56,14 +61,6 @@ export async function getSSGDataOnce(
   debug('saving core data index');
   fs.writeFileSync(dotFolderDataPath, JSON.stringify(mainIndex));
   return mainIndex;
-
-  // // idk if this is the best check...
-  // if (Object.keys(mainIndex).length < 1) {
-  //   console.warn('ssg warning: no index data from ssg plugins found, continuing as sapper app')
-  //   return null
-  // } else {
-  //   return mainIndex
-  // }
 }
 
 /**

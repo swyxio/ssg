@@ -2,7 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 const coreData = require('./dist/coreData').default;
-const debug = require('debug')('ssg:readConfig')
+const debug = require('debug')('ssg:readConfig');
 
 // todo: actually use opts.ssgConfig
 const configPath = path.resolve(process.cwd(), 'ssg.config.js');
@@ -20,13 +20,14 @@ let getIndex = () => JSON.parse(fs.readFileSync(dotFolderDataPath, 'utf8'));
 
 let getDataSlice = async (key, uid) => {
   const plugins = ssgConfig.plugins;
+  const coreDataPlugin = coreData(ssgConfig.coreDataOpts);
   if (key === 'ssgCoreData') {
     // specialcase handling for ssgCoreData
-    return coreData(ssgConfig.coreDataOpts).getDataSlice(uid);
+    return coreDataPlugin.getDataSlice(uid);
   }
   if (plugins) {
     if (plugins[key]) {
-      return plugins[key].getDataSlice(uid);
+      return plugins[key].getDataSlice(uid, coreDataPlugin);
     }
   }
   if (ssgConfig.getDataSlice) {

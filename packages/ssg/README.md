@@ -157,7 +157,9 @@ As of v0.45 `ssg` now also reads all markdown files in the root directory by def
 
 ```js
 // example ssg.config.js
-exports.coreDataDirPath = 'content/blog' // defaults to '.'
+exports.coreDataOpts = {
+  coreDataDirPath: 'content/blog' // defaults to '.'
+}
 ```
 
 ## `ssg dev`

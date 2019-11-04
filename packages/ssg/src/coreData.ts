@@ -9,7 +9,7 @@ const path = require('path');
 const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
 const frontMatter = require('front-matter');
-const debug = require('debug')('ssg:coreData')
+const debug = require('debug')('ssg:coreData');
 
 /**
  *
@@ -74,12 +74,13 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
   if (opts.modifyRemarkConfig) {
     _preset = produce(_preset, opts.modifyRemarkConfig);
   }
+  let directoriesToIgnore = ['node_modules']; // TODO make this modifiable
 
   let index: SSGRemarkPluginFile[];
   // flattens all directories below the dirPath
   // is recursive!
   async function createIndex(recursiveDir = coreDataDirPath) {
-    debug('creating ssgCoreData Index')
+    debug('creating ssgCoreData Index');
     const files = await readdir(recursiveDir);
     const getStats = async (file: string, dirPath: string) => {
       const filePath = path.join(dirPath, file);
@@ -87,7 +88,7 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
       shortFilePath = shortFilePath.dir + '/' + shortFilePath.name; // drop the extension, could be '.md' but also anything else
       const st = await stat(filePath);
       if (st.isDirectory()) {
-        if ((file = 'node_modules')) return; // dont go inside node_modules
+        if (directoriesToIgnore.includes(file)) return;
         // TODO: take an ignore glob and default to node_modules
         return await createIndex(filePath); // recursion
       } else {
@@ -144,7 +145,7 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
   }
 
   async function getDataSlice(slug: string) {
-    debug('reading ssgCoreData slice for ' + slug)
+    debug('reading ssgCoreData slice for ' + slug);
     let filepath = index.find(item => item.slug === slug);
     if (filepath) {
       const md = vfile.readSync(filepath.filePath);
