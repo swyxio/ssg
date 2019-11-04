@@ -144,7 +144,16 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
     return value !== null && value !== undefined;
   }
 
+  async function loadIndex(loader: Function) {
+    index = loader();
+  }
+
   async function getDataSlice(slug: string) {
+    if (typeof index === 'undefined') {
+      console.error(
+        `warning: coreData's index is undefined. You need to either call createIndex or loadIndex before you call coreData's getDataSlice method.`
+      );
+    }
     debug('reading ssgCoreData slice for ' + slug);
     let filepath = index.find(item => item.slug === slug);
     if (filepath) {
@@ -165,6 +174,7 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
 
   return {
     createIndex,
+    loadIndex,
     getDataSlice
   };
 }
