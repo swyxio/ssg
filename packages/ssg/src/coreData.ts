@@ -57,10 +57,14 @@ export type PluginOpts = {
 };
 type SSGRemarkPluginFile = {
   slug: string;
+  /** an absolute filepath for the virtual file */
   filePath: string;
+  /** filepath for the virtual file relative to the root, handy for display */
+  shortFilePath: string;
   createdAt: Date;
   modifiedAt: Date;
   metadata: any;
+  html?: string;
 };
 export default function ssgCoreDataPlugin(opts?: PluginOpts) {
   if (opts === null || opts === undefined) opts = {};
@@ -105,7 +109,8 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
         return [
           {
             slug,
-            filePath: shortFilePath,
+            shortFilePath,
+            filePath,
             createdAt: st.birthtime,
             modifiedAt: st.mtime,
             metadata
@@ -155,9 +160,9 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
       );
     }
     debug('reading ssgCoreData slice for ' + slug);
-    let filepath = index.find(item => item.slug === slug);
-    if (filepath) {
-      const md = vfile.readSync(filepath.filePath);
+    let item = index.find(_item => _item.slug === slug);
+    if (item) {
+      const md = vfile.readSync(item.filePath);
       const file = await unified()
         .use(_preset)
         .process(md)
@@ -166,7 +171,8 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
           throw err;
         });
       file.extname = '.html';
-      return file.toString();
+      item.html = file.toString();
+      return item;
     } else {
       throw new Error('no file for ' + slug + ' found');
     }

@@ -16,13 +16,15 @@ try {
 }
 const dotFolderPath = path.join('__sapper__', 'ssg');
 const dotFolderDataPath = path.join(dotFolderPath, 'data.json');
+const getIndex = () => {
+  const allIndex = JSON.parse(fs.readFileSync(dotFolderDataPath, 'utf8'));
+  return allIndex.ssgCoreData;
+};
 
 let getDataSlice = async (key, uid) => {
   const plugins = ssgConfig.plugins;
   const coreDataPlugin = coreData(ssgConfig.coreDataOpts);
-  coreDataPlugin.loadIndex(() =>
-    JSON.parse(fs.readFileSync(dotFolderDataPath, 'utf8'))
-  );
+  coreDataPlugin.loadIndex(getIndex);
   if (key === 'ssgCoreData') {
     // specialcase handling for ssgCoreData
     return coreDataPlugin.getDataSlice(uid);
