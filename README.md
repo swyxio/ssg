@@ -4,7 +4,7 @@ this is a monorepo for a Sapper Site Generator and related packages. Check READM
 
 - **[/packages/ssg](/packages/ssg/README.md) is the primary package**. Please click thru and read this to get started.
 - [/packages/source-yaml](/packages/source-yaml/README.md) (status: active)
-- [/packages/source-remark](/packages/source-remark/README.md) (status: active)
+- [/packages/source-remark](/packages/source-remark/README.md) (status: inactive)
 
 We also have an `examples` folder but its kinda inactive right now.
 
