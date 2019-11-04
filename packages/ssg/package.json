@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@sindresorhus/slugify": "^0.9.1",
-    "@ssgjs/sapper": "^0.27.9-fork.13",
+    "@ssgjs/sapper": "^0.27.9-fork.14",
     "chalk": "^2.4.2",
     "chokidar": "^3.0.2",
     "enquirer": "^2.3.2",

@@ -136,14 +136,16 @@ In your templates, you may now query this data at any time:
 <script context="module">
   export async function preload({ params, query }) {
     cosnt key = 'posts'
-    const res = await this.fetch(`data/${key}___ssg___${params.slug}.json`)
-    const data = await res.json()
+    const res = await this.ssgData(key, params.slug)
     if (res.status === 200) {
-      return { post: data }
+      return data
     } else {
       this.error(res.status, data.message)
     }
   }
+</script>
+<script>
+  export let data
 </script>
 ```
 

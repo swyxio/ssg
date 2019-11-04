@@ -63,7 +63,7 @@ type SSGRemarkPluginFile = {
 };
 export default function(opts?: PluginOpts) {
   if (opts === null || opts === undefined) opts = {};
-  let _dirPath = opts.dirPath || path.resolve('.');
+  let startDirPath = opts.dirPath || path.resolve('.');
   if (opts.modifyRecognizedExtensions) {
     _recognizedExtensions = produce(
       _recognizedExtensions,
@@ -77,10 +77,12 @@ export default function(opts?: PluginOpts) {
   let index: SSGRemarkPluginFile[];
   // flattens all directories below the dirPath
   // is recursive!
-  async function createIndex(recursiveDir = _dirPath) {
+  async function createIndex(recursiveDir = startDirPath) {
     const files = await readdir(recursiveDir);
-    const getStats = async (file: string, _dirPath: string) => {
-      const filePath = path.join(_dirPath, file);
+    const getStats = async (file: string, dirPath: string) => {
+      const filePath = path.join(dirPath, file);
+      let shortFilePath = path.parse(path.relative(startDirPath, filePath));
+      shortFilePath = shortFilePath.dir + '/' + shortFilePath.name; // drop the extension, could be '.md' but also anything else
       const st = await stat(filePath);
       if (st.isDirectory()) {
         if ((file = 'node_modules')) return; // dont go inside node_modules
@@ -95,11 +97,12 @@ export default function(opts?: PluginOpts) {
         let pubdate = metadata.date || st.birthtime;
         metadata.pubdate = pubdate;
         metadata.date = new Date(pubdate);
-        const slug = metadata.slug || metadata.permalink || slugify(filePath);
+        const slug =
+          metadata.slug || metadata.permalink || slugify(shortFilePath);
         return [
           {
             slug,
-            filePath,
+            filePath: shortFilePath,
             createdAt: st.birthtime,
             modifiedAt: st.mtime,
             metadata
