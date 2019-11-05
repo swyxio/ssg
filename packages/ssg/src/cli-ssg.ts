@@ -75,7 +75,6 @@ export function readSSGConfig(ssgConfigPath: string): SSGConfig | undefined {
         ssgConfigPath +
         ' doesnt exist, continuing as regular sapper app'
     );
-    return;
   }
   debug('reading ssg config');
   let ssgConfig = require(path.resolve(ssgConfigPath));
