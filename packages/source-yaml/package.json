@@ -1,6 +1,6 @@
 {
   "name": "@ssgjs/source-yaml",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "main": "dist/index.js",
   "license": "MIT",
   "repository": {
@@ -15,6 +15,7 @@
     "typescript": "^3.6.3"
   },
   "scripts": {
+    "prepublish": "yarn build",
     "build": "tsc"
   },
   "bugs": {

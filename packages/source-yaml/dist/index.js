@@ -26,23 +26,40 @@ const fromb64 = (str) => Buffer.from(str, 'base64').toString();
 exports.defaultRecognizedExtensions = ['.yml', '.yaml'];
 function SSGYamlPlugin(opts) {
     if (typeof opts.dirPath === 'undefined')
-        throw new Error('dirPath not supplied to remark plugin');
+        throw new Error('dirPath not supplied to ssg yaml plugin');
     let recognizedExtensions = opts.recognizedExtensions || exports.defaultRecognizedExtensions;
+    function createIndex( /* we could take mainIndex but we dont really use it here */) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const arrs = yield crawlDirectory(opts.dirPath); // calls the recursive crawl function below
+            const strArr = [];
+            let fileArr = strArr.concat
+                .apply([], arrs) // ghetto flatten
+                .filter(Boolean);
+            let index = {};
+            fileArr.forEach(obj => {
+                const { filePath } = obj;
+                const baseName = slugify(filePath);
+                obj.data = yaml.safeLoad(fs.readFileSync(filePath, 'utf-8'));
+                index[baseName] = obj;
+            });
+            return index;
+        });
+    }
     // flattens all directories below the dirPath
     // is recursive!
-    function createIndex(recursiveDir = opts.dirPath) {
+    function crawlDirectory(recursiveDir) {
         return __awaiter(this, void 0, void 0, function* () {
             const files = yield readdir(recursiveDir);
             const getStats = (file, _dirPath) => __awaiter(this, void 0, void 0, function* () {
                 const filePath = path.join(_dirPath, file);
                 const st = yield stat(filePath);
                 if (st.isDirectory()) {
-                    const temp = yield createIndex(filePath); // recursion
+                    const temp = yield crawlDirectory(filePath); // recursion
                     return Object.values(temp); // take it back out of an object into an array
                 }
                 else {
                     if (file === '.DS_Store')
-                        return; // skip ds store...
+                        return; // skip ds store... TODO have a skipFiles list
                     if (!recognizedExtensions.includes(path.extname(file)))
                         return; // skip
                     return [
@@ -51,24 +68,13 @@ function SSGYamlPlugin(opts) {
                             filePath,
                             uid: tob64(filePath),
                             createdAt: st.birthtime,
-                            modifiedAt: st.mtime,
-                        },
+                            modifiedAt: st.mtime
+                        }
                     ];
                 }
             });
             const arrs = yield Promise.all(files.map((file) => getStats(file, recursiveDir)));
-            const strArr = [];
-            let fileArr = strArr.concat
-                .apply([], arrs) // ghetto flatten
-                .filter(Boolean);
-            let index = {};
-            fileArr.forEach((obj) => {
-                const { filePath } = obj;
-                const baseName = slugify(filePath);
-                obj.data = yaml.safeLoad(fs.readFileSync(filePath, 'utf-8'));
-                index[baseName] = obj;
-            });
-            return index;
+            return arrs;
         });
     }
     function getDataSlice(uid) {
@@ -80,7 +86,7 @@ function SSGYamlPlugin(opts) {
     }
     return {
         createIndex,
-        getDataSlice,
+        getDataSlice
     };
 }
 exports.default = SSGYamlPlugin;

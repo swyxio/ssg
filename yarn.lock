@@ -600,9 +600,10 @@
     escape-string-regexp "^1.0.5"
     lodash.deburr "^4.1.0"
 
-"@ssgjs/sapper@^0.27.9-fork.15":
-  version "0.27.9-fork.15"
-  resolved "https://registry.yarnpkg.com/@ssgjs/sapper/-/sapper-0.27.9-fork.15.tgz#85b3746a7054c779686271d54e2ddec3e3c8ed86"
+"@ssgjs/sapper@^0.27.9-fork.17":
+  version "0.27.9-fork.17"
+  resolved "https://registry.yarnpkg.com/@ssgjs/sapper/-/sapper-0.27.9-fork.17.tgz#ab96fd1723ce75c1d964f8d51a4ff4a7a6684ab7"
+  integrity sha512-mc6SxADM65wRN6sn/td1QDcB3uYLc8FMTNhlx+e61hix5BdBPC7bWpYYDo+K5pJXYoWO6i6X0OW1OpVOSa/RtQ==
   dependencies:
     "@babel/core" "^7.6.2"
     compression "^1.7.4"

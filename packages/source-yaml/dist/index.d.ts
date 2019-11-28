@@ -9,7 +9,7 @@ declare type PluginOpts = {
     recognizedExtensions?: string[];
 };
 export default function SSGYamlPlugin(opts: PluginOpts): {
-    createIndex: (recursiveDir?: string) => Promise<{}>;
+    createIndex: () => Promise<{}>;
     getDataSlice: (uid: string) => Promise<any>;
 };
 export {};
