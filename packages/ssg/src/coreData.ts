@@ -81,10 +81,48 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
   let directoriesToIgnore = ['node_modules']; // TODO make this modifiable
 
   let index: SSGRemarkPluginFile[];
+
   // flattens all directories below the dirPath
   // is recursive!
-  async function createIndex(recursiveDir = coreDataDirPath) {
+  async function createIndex(/* mainIndex */) {
     debug('creating ssgCoreData Index');
+    const arrs = await crawlDirectory(coreDataDirPath);
+    const strArr = [] as SSGRemarkPluginFile[];
+    index = strArr.concat.apply([], arrs); // ghetto flatten
+    index = index
+      .filter(Boolean)
+      .filter(notEmpty)
+      .sort((a, b) => {
+        return a!.metadata.pubdate < b!.metadata.pubdate ? 1 : -1;
+      });
+    // guard against duplicate slugs
+    let seenSlugs = new Set();
+    index.forEach(obj => {
+      if (seenSlugs.has(obj.slug)) {
+        // going to throw an error, but lets gather all the sources for nice DX
+        const filesWithDuplicateSlugs = index
+          .filter(x => x.slug === obj.slug)
+          .map(x => x.shortFilePath);
+        throw new Error(`ssgCoreData error: Duplicate slugs for ${
+          obj.slug
+        } detected:
+        ${filesWithDuplicateSlugs.join('\n')}
+        `);
+      } else {
+        seenSlugs.add(obj.slug);
+      }
+    });
+    const result = index;
+    // // i dont really use this yet
+    // if (opts.onCreateIndex) {
+    //   await opts.onCreateIndex(result) // optional logging
+    // }
+    return result;
+  }
+
+  // flattens all directories below the dirPath
+  // is recursive!
+  async function crawlDirectory(recursiveDir: string) {
     const files = await readdir(recursiveDir);
     const getStats = async (file: string, dirPath: string) => {
       const filePath = path.join(dirPath, file);
@@ -94,7 +132,7 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
       if (st.isDirectory()) {
         if (directoriesToIgnore.includes(file)) return;
         // TODO: take an ignore glob and default to node_modules
-        return await createIndex(filePath); // recursion
+        return await crawlDirectory(filePath); // recursion
       } else {
         if (file === '.DS_Store') return; // skip ds store...
         if (!_recognizedExtensions.includes(path.extname(file))) return; // skip
@@ -118,30 +156,11 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
         ] as SSGRemarkPluginFile[];
       }
     };
-    const promises: Promise<SSGRemarkPluginFile[]>[] = files.map(
-      (file: string) => getStats(file, recursiveDir)
-    );
-    const arrs: (SSGRemarkPluginFile[])[] = await Promise.all(promises);
-    const strArr = [] as SSGRemarkPluginFile[];
-    index = strArr.concat.apply([], arrs); // ghetto flatten
-    index = index
-      .filter(Boolean)
-      .filter(notEmpty)
-      .sort((a, b) => {
-        return a!.metadata.pubdate < b!.metadata.pubdate ? 1 : -1;
-      });
-    // .filter(x =>
-    //   opts.dateFilterType === 'all'
-    //     ? true
-    //     : new Date(x!.metadata.date) <= new Date()
-    // );
-    // const result = extractSlugObjectFromArray(index);
-    const result = index;
-    // // i dont really use this yet
-    // if (opts.onCreateIndex) {
-    //   await opts.onCreateIndex(result) // optional logging
-    // }
-    return result;
+    const promises: Promise<
+      SSGRemarkPluginFile[]
+    >[] = files.map((file: string) => getStats(file, recursiveDir));
+    const arrs: SSGRemarkPluginFile[][] = await Promise.all(promises);
+    return arrs;
   }
 
   // https://stackoverflow.com/questions/43118692/typescript-filter-out-nulls-from-an-array
