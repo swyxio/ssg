@@ -81,7 +81,11 @@ export function readSSGConfig(ssgConfigPath: string): SSGConfig {
   } else {
     debug('reading ssg config');
     let _ssgConfig = require(path.resolve(ssgConfigPath));
-    ssgConfig.watchFolders = _ssgConfig.watchFolders || 'content';
+    ssgConfig = {
+      ...ssgConfig, // default to configpath
+      watchFolders: 'content', // default to 'content'
+      ..._ssgConfig // let user ssgconfig override everything
+    };
   }
   return ssgConfig;
 }
