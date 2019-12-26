@@ -165,9 +165,7 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
 
   // https://stackoverflow.com/questions/43118692/typescript-filter-out-nulls-from-an-array
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-    if (Array.isArray(value)) {
-      return value[0] !== null && value[0] !== undefined;
-    }
+    if (Array.isArray(value)) return notEmpty(value[0]);
     return value !== null && value !== undefined;
   }
 
