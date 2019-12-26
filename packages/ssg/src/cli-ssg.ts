@@ -68,18 +68,21 @@ export async function getSSGDataOnce(
  * read ssg config and ensure defaults exist
  *
  */
-export function readSSGConfig(ssgConfigPath: string): SSGConfig | undefined {
+export function readSSGConfig(ssgConfigPath: string): SSGConfig {
+  let ssgConfig = {
+    configPath: ssgConfigPath
+  } as SSGConfig;
   if (!fs.existsSync(ssgConfigPath)) {
     console.warn(
       'ssgConfig file ' +
         ssgConfigPath +
         ' doesnt exist, continuing as regular sapper app'
     );
+  } else {
+    debug('reading ssg config');
+    let _ssgConfig = require(path.resolve(ssgConfigPath));
+    ssgConfig.watchFolders = _ssgConfig.watchFolders || 'content';
   }
-  debug('reading ssg config');
-  let ssgConfig = require(path.resolve(ssgConfigPath));
-  ssgConfig.configPath = ssgConfigPath;
-  ssgConfig.watchFolders = ssgConfig.watchFolders || 'content';
   return ssgConfig;
 }
 
@@ -90,31 +93,35 @@ export function readSSGConfig(ssgConfigPath: string): SSGConfig | undefined {
  */
 export function watchSSGFiles(watcher: any, ssgConfig: Partial<SSGConfig>) {
   let isReady = false;
-  const watchHandler = (event: string) => async (path: string) => {
-    // bypass the initial 'add' events
-    if (event === 'started') isReady = true;
-    else if (!isReady) return;
+  if (!ssgConfig.watchFolders) {
+    debug('no ssg files to watch');
+  } else {
+    const watchHandler = (event: string) => async (path: string) => {
+      // bypass the initial 'add' events
+      if (event === 'started') isReady = true;
+      else if (!isReady) return;
 
-    // cue the restart message e.g. `content/color.yml changed. rebuilding...`
-    watcher.restart(path, 'client'); // not sure if 'client'
-    // get the frontend to live reload!
-    watcher.dev_server.send({ action: 'reload' });
-  };
-  const filesToWatch = [
-    ...ssgConfig.watchFolders!.split(' '),
-    ssgConfig.configPath
-  ].filter(Boolean) as string[];
-  if (filesToWatch.length < 1) {
-    console.log(
-      'Warning: no SSG config or content files detected, operating as a basic Sapper app!'
-    );
-    return;
+      // cue the restart message e.g. `content/color.yml changed. rebuilding...`
+      watcher.restart(path, 'client'); // not sure if 'client'
+      // get the frontend to live reload!
+      watcher.dev_server.send({ action: 'reload' });
+    };
+    const filesToWatch = [
+      ...ssgConfig.watchFolders!.split(' '),
+      ssgConfig.configPath
+    ].filter(Boolean) as string[];
+    if (filesToWatch.length < 1) {
+      console.log(
+        'Warning: no SSG config or content files detected, operating as a basic Sapper app!'
+      );
+      return;
+    }
+    debug('watching ssg files');
+    const chokiwatch = chokidar.watch(filesToWatch);
+    chokiwatch
+      .on('add', watchHandler('added'))
+      .on('change', watchHandler('changed'))
+      .on('error', (error) => console.log(`chokiwatch error: ${error}`))
+      .on('ready', watchHandler('started'));
   }
-  debug('watching ssg files');
-  const chokiwatch = chokidar.watch(filesToWatch);
-  chokiwatch
-    .on('add', watchHandler('added'))
-    .on('change', watchHandler('changed'))
-    .on('error', error => console.log(`chokiwatch error: ${error}`))
-    .on('ready', watchHandler('started'));
 }

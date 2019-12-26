@@ -97,12 +97,12 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
       });
     // guard against duplicate slugs
     let seenSlugs = new Set();
-    index.forEach(obj => {
+    index.forEach((obj) => {
       if (seenSlugs.has(obj.slug)) {
         // going to throw an error, but lets gather all the sources for nice DX
         const filesWithDuplicateSlugs = index
-          .filter(x => x.slug === obj.slug)
-          .map(x => x.shortFilePath);
+          .filter((x) => x.slug === obj.slug)
+          .map((x) => x.shortFilePath);
         throw new Error(`ssgCoreData error: Duplicate slugs for ${
           obj.slug
         } detected:
@@ -165,6 +165,9 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
 
   // https://stackoverflow.com/questions/43118692/typescript-filter-out-nulls-from-an-array
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+    if (Array.isArray(value)) {
+      return value[0] !== null && value[0] !== undefined;
+    }
     return value !== null && value !== undefined;
   }
 
@@ -179,7 +182,7 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
       );
     }
     debug('reading ssgCoreData slice for ' + slug);
-    let item = index.find(_item => _item.slug === slug);
+    let item = index.find((_item) => _item.slug === slug);
     if (item) {
       const md = vfile.readSync(item.filePath);
       const file = await unified()

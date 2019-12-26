@@ -109,11 +109,10 @@ prog
         const ssgConfig = readSSGConfig(ssgConfigPath);
         debug('getting SSG data Index');
         await getSSGDataOnce(ssgConfig, path.resolve(opts['build-dir'], '../'));
-        if (ssgConfig) {
-          debug('getting watching SSG data files...');
-          // actually do stuff with it
-          watchSSGFiles(watcher, ssgConfig);
-        }
+        debug('getting watching SSG data files...');
+        // actually do stuff with it
+        watchSSGFiles(watcher, ssgConfig);
+
         /**
          *
          * END SSG SECTION
@@ -206,7 +205,7 @@ prog
             console.log(colors.bold().yellow(`• ${event.type}`));
 
             event.warnings
-              .filter(e => !e.duplicate)
+              .filter((e) => !e.duplicate)
               .forEach((warning: TODO_ANY) => {
                 if (warning.file) console.log(colors.bold(warning.file));
                 console.log(warning.message);
