@@ -87,14 +87,11 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
   async function createIndex(/* mainIndex */) {
     debug('creating ssgCoreData Index');
     const arrs = await crawlDirectory(coreDataDirPath);
-    const strArr = [] as SSGRemarkPluginFile[];
-    index = strArr.concat.apply([], arrs); // ghetto flatten
-    index = index
-      .filter(Boolean)
-      .filter(notEmpty)
-      .sort((a, b) => {
-        return a!.metadata.pubdate < b!.metadata.pubdate ? 1 : -1;
-      });
+    // const strArr = [] as SSGRemarkPluginFile[];
+    index = flattenArrayOfArrays(arrs); // ghetto flatten
+    index = index.filter(notEmpty).sort((a, b) => {
+      return a!.metadata.pubdate < b!.metadata.pubdate ? 1 : -1;
+    });
     // guard against duplicate slugs
     let seenSlugs = new Set();
     index.forEach((obj) => {
@@ -120,6 +117,20 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
     return result;
   }
 
+  // https://stackoverflow.com/a/16953805
+  function flattenArrayOfArrays(a: any, r?: any) {
+    if (!r) {
+      r = [];
+    }
+    for (var i = 0; i < a.length; i++) {
+      if (Array.isArray(a[i])) {
+        r.concat(flattenArrayOfArrays(a[i], r));
+      } else {
+        r.push(a[i]);
+      }
+    }
+    return r;
+  }
   // flattens all directories below the dirPath
   // is recursive!
   async function crawlDirectory(recursiveDir: string) {
