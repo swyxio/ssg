@@ -23,6 +23,8 @@ yarn add ssg
 
 Svelte and @ssgjs/sapper are included as direct dependencies, however feel free to also install them if you need to.
 
+To get going, you will then need something in `src/routes`, usually an `index.svelte` file to get started. You can scaffold one by running `yarn ssg eject` and picking `sampleIndex.svelte` to see an example. [This demo repo will also help show how `ssg` is meant to be used](https://github.com/sw-yx/ssg-demo).
+
 ## Contributing
 
 This project needs feedback and maintainers. In fact if you'd like to take it over please be my guest. I don't have time for this. I'm only doing it cause no one else has.
