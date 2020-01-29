@@ -47,7 +47,8 @@ What I want SSG to launch with is:
   - filestructure based markdown
 - ship your own docs in CLI
 - proper docsite
-- DEBUG=*
+- `DEBUG=*`
+- [Differential Dataflow](https://blog.acolyer.org/2015/06/17/differential-dataflow/)
 
 open questions:
 
