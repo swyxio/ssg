@@ -45,7 +45,8 @@ const preprocess = [
     ],
     typescript: {
       transpileOnly: true
-    }
+    },
+    preserve: ['ld+json']
   }),
   mdsvex({
     // extension: '.svexy', // the default is '.svexy', if you lack taste, you might want to change it
