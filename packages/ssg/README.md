@@ -6,6 +6,18 @@ a very experimental static site generator overlay on top of Sapper.
 
 Because Sapper needs fixes to support static export at scale, and moves too slowly for the development of this project, we use a light fork of Sapper (https://github.com/sw-yx/sapper) instead of sapper itself. Hopefully this fork will not be necessary in future, but for now we need these fixes for ssg to work. We aim to keep this fork a superset of sapper as much as possible.
 
+## ssg's Data Fetching Philosophy
+
+SSG uses a new data fetching paradigm, so understanding this is critical to understanding how to write plugins and how SSG can be parallelizable as well as supports incremental builds. (long term, not exactly currently implemented)
+
+Most static site generators have a very naive approach to data - pull everything upfront, then use all that upfront data to generate every single page. This makes page generation blocked by the data fetching phase, hence it cannot be parallelized. It also means total agnosticism to data model and every page has to be regenerated every time, hence incremental builds are hard.
+
+SSG takes the insight that data indexes are cheap, and data slices are expensive. For example, it is cheap to get the filename and date modified info of every file in a directory, or an index of all entries in a CMS. It is more expensive to actually open up, read, and process each file/entry in the CMS. So we split up the data fetch process into a cheap `createIndex`, and an expensive, but parallelizable, `getDataSlice`. 
+
+Lastly, the cheap indexes can also serve as a data manifest, which, if saved, can be diffed against prior manifests, so only new/modified data slices need be generated. This gets us incremental builds.
+
+(again, not currently implemented, but this is the plan)
+
 ## Example usage
 
 Active Codebases you can see this project in use:
