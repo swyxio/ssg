@@ -1,5 +1,11 @@
 # SSG
 
+## Why SSG?
+
+Watch this 20 min talk: https://youtu.be/JEH0V-zNGUk
+
+## What is this repo?
+
 this is a monorepo for a Sapper Site Generator and related packages. Check README's inside `/packages` for more info on each. In particular:
 
 - **[/packages/ssg](/packages/ssg/README.md) is the primary package**. Please click thru and read this to get started.
@@ -41,7 +47,8 @@ What I want SSG to launch with is:
   - filestructure based markdown
 - ship your own docs in CLI
 - proper docsite
-- DEBUG=*
+- `DEBUG=*`
+- [Differential Dataflow](https://blog.acolyer.org/2015/06/17/differential-dataflow/)
 
 open questions:
 
