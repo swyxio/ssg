@@ -28,7 +28,7 @@ the sequence is:
 - ssg/Sapper tries to generate a main/index page (eg list of posts)
 - inside any svelte file in `src/routes`, [the Sapper preload function](https://sapper.svelte.dev/docs#Preloading) has been modified to have a special `this.ssgData` function which is a simple helper for pinging [a centralized data API route](https://github.com/sw-yx/swyxdotio/blob/master/src/routes/data/%5BssgData%5D.json.js) (required if you want to fetch data from ssg.. required for Sapper but eventually we want to get rid of this too)
 - the data route returns the index data, from `createIndex`. you may specify a key - either `ssgCoreData` (what `this.ssgData` assumes by default) or whatever other custom key you want
-- Sapper crawls the index page for links to detail pages (eg individual post) and starts to generate them, in parallel
+- in `ssg build`, Sapper crawls the index page for links to detail pages (eg individual post) and starts to generate them, in parallel. for `ssg dev`, only the currently viewed page is generated.
 - each page calls the data route again for data slices
 - the data route calls `getDataSlice` with an optional key and an optional `uid`. A `uid` uniquely identifies the data slice.
 - then the page is generated
@@ -43,8 +43,8 @@ in future we will persist the indexes as manifests, and then diff them between b
 // ssg.config.js
 exports.createIndex = async (mainIndex = {}) => {
   console.log('getting intial data')
-  mainIndex.MyKey1 = await fetch('whatever')
-  mainIndex.MyKey2 = await fetch('whatever2')
+  mainIndex.MyKey1 = await fetch('whatever/1')
+  mainIndex.MyKey2 = await fetch('whatever/2')
   return mainIndex
 }
 ```
@@ -57,13 +57,61 @@ this is meant for grabbing indexes cheaply. `mainIndex` is a POJO that will be u
 // ssg.config.js
 exports.getDataSlice = async (key, uid) => {
 	if (key == 'MyKey1') {
-		return fetch(`whatever/${uid}`)
+		return fetch(`whatever/1/${uid}`)
 	}
 	if (key == 'MyKey2') {
-		return fetch(`whatever2/${uid}`)
+		return fetch(`whatever/2/${uid}`)
 	}
 }
 ```
+
+as you can see, we are grouping by lifecycle method, and the indexes don't really interact with each other. so we also have a way to group them by key:
+
+```js
+// ssg.config.js
+exports.plugins = {
+  MyKey1: {
+    createIndex(mainIndex) {
+      return fetch(`whatever/1/`)
+    },
+    getDataSlice(uid) {
+      return fetch(`whatever/2/${uid}`)
+    }
+  },
+  MyKey2: {
+    createIndex(mainIndex) {
+      return fetch(`whatever/2`)
+    },
+    getDataSlice(uid) {
+      return fetch(`whatever/2/${uid}`)
+    }
+  }
+}
+```
+
+which also opens up the way for [reusable data plugins](https://github.com/sw-yx/swyxdotio/blob/master/ssg.config.js#L22-L43):
+
+
+```js
+// could be an npm package
+function myDataPlugin(identifier) {
+  return {
+    createIndex() {
+      return fetch(identifier)
+    },
+    getDataSlice(uid) {
+      return fetch(`${identifier}/${uid}`)
+    }
+  }
+}
+
+// ssg.config.js
+exports.plugins = {
+  MyKey1: myDataPlugin('whatever/1'),
+  MyKey2: myDataPlugin('whatever/2')
+}
+```
+
 
 3. adding the ssg data route
 
@@ -105,7 +153,7 @@ exports.getDataSlice = async (key, uid) => {
 ```html
 <script context="module">
   export async function preload({ params, query }) {
-    const post = await this.ssgData({ key: 'writing', id: params.slug })
+    const post = await this.ssgData({ key: 'MyKey1', id: params.slug })
     return { post }
   }
 </script>
@@ -120,8 +168,9 @@ exports.getDataSlice = async (key, uid) => {
 </SlugTemplate>
 ```
 
-You can experiment around with the [SSG Demo Repo](https://github.com/sw-yx/ssg-demo). You may run into small bugs, please file them.
+as you can see, you are expected to know and use Sapper and Svelte conventions.
 
+You can experiment around with the [SSG Demo Repo](https://github.com/sw-yx/ssg-demo). You may run into small bugs, please file them. 
 ## Example usage
 
 Active Codebases you can see this project in use:
