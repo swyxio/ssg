@@ -18,6 +18,110 @@ Lastly, the cheap indexes can also serve as a data manifest, which, if saved, ca
 
 (again, not currently implemented, but this is the plan)
 
+## How It Works
+
+the sequence is:
+
+- start (`ssg build` or `ssg dev`)
+- look around the project filesystem for markdown files. this gets put into `mainIndex.ssgCoreData`. this is meant to help `ssg` be zero config
+- if `ssg.config.js` exists, run `createIndex` and add whatever else you like to `mainIndex` under whatever keys you want.
+- ssg/Sapper tries to generate a main/index page (eg list of posts)
+- inside any svelte file in `src/routes`, [the Sapper preload function](https://sapper.svelte.dev/docs#Preloading) has been modified to have a special `this.ssgData` function which is a simple helper for pinging [a centralized data API route](https://github.com/sw-yx/swyxdotio/blob/master/src/routes/data/%5BssgData%5D.json.js) (required if you want to fetch data from ssg.. required for Sapper but eventually we want to get rid of this too)
+- the data route returns the index data, from `createIndex`. you may specify a key - either `ssgCoreData` (what `this.ssgData` assumes by default) or whatever other custom key you want
+- Sapper crawls the index page for links to detail pages (eg individual post) and starts to generate them, in parallel
+- each page calls the data route again for data slices
+- the data route calls `getDataSlice` with an optional key and an optional `uid`. A `uid` uniquely identifies the data slice.
+- then the page is generated
+
+in future we will persist the indexes as manifests, and then diff them between builds so we only run `getDataSlice` for slices that have changed. for incremental builds.
+
+## Example code
+
+1. fetching data - you can fetch inside `createIndex` and `getDataSlice`.
+
+```js
+// ssg.config.js
+exports.createIndex = async (mainIndex = {}) => {
+  console.log('getting intial data')
+  mainIndex.MyKey1 = await fetch('whatever')
+  mainIndex.MyKey2 = await fetch('whatever2')
+  return mainIndex
+}
+```
+
+this is meant for grabbing indexes cheaply. `mainIndex` is a POJO that will be use and persisted through the ssg build session, add whatever index you want with a unique key. try not to outright replace `mainIndex` itself
+
+2. getDataSlice
+
+```js
+// ssg.config.js
+exports.getDataSlice = async (key, uid) => {
+	if (key == 'MyKey1') {
+		return fetch(`whatever/${uid}`)
+	}
+	if (key == 'MyKey2') {
+		return fetch(`whatever2/${uid}`)
+	}
+}
+```
+
+3. adding the ssg data route
+
+[you can copy and paste this exactly](https://github.com/sw-yx/swyxdotio/blob/master/src/routes/data/%5BssgData%5D.json.js) or you can run `ssg eject` and pick the inbuilt scaffold for data route
+
+4. example index post `src/routes/index.svelte`
+
+```html
+<script context="module">
+  export function preload({ params, query }) {
+    return this.ssgData({ key: 'MyKey1' })
+      .then(posts => ({ posts }))
+      .catch(err => {
+        this.error(500, err.message)
+      })
+  }
+</script>
+
+<script>
+  export let posts
+</script>
+
+  <header>
+    <h1>Writing</h1>
+  </header>
+  <ul>
+    {#each posts as post}
+      <li>
+        <a rel="prefetch" href="/{post.slug}">
+          <h2>{post.title}</h2>
+        </a>
+      </li>
+    {/each}
+  </ul>
+```
+
+5. example detail post `src/routes/[slug].svelte`
+
+```html
+<script context="module">
+  export async function preload({ params, query }) {
+    const post = await this.ssgData({ key: 'writing', id: params.slug })
+    return { post }
+  }
+</script>
+
+<script>
+  export let post
+</script>
+
+<SlugTemplate>
+  <h1 id="postTitle">{post.title}</h1>
+  {@html post.html}
+</SlugTemplate>
+```
+
+You can experiment around with the [SSG Demo Repo](https://github.com/sw-yx/ssg-demo). You may run into small bugs, please file them.
+
 ## Example usage
 
 Active Codebases you can see this project in use:
