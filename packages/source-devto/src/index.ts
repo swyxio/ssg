@@ -89,15 +89,14 @@ type DevToPostProcessedType = DevToPostType & {
   userFrontMatter?: Object,
   metadata?: {
     title: string,
+    slug: string,
     date: Date,
     categories?: string[],
     description?: string,
     subtitle?: string
   }
 }
-type DevToPluginSlugMap = {
-  [slug: string]: DevToPostProcessedType
-}
+
 
 
 module.exports = function(opts: PluginOpts) {
@@ -107,7 +106,7 @@ module.exports = function(opts: PluginOpts) {
   }
 
   const headers = {'api-key': opts.apiKey}
-  let allArticles: DevToPluginSlugMap = {}
+  let allArticles: DevToPostProcessedType[] = [];
 
   // flattens all directories below the dirPath
   // is recursive!
@@ -135,19 +134,21 @@ module.exports = function(opts: PluginOpts) {
         let processedPost: DevToPostProcessedType = post
         processedPost.metadata = {
           title: post.title,
+          slug: post.slug,
           date: new Date(post.published_at), // may want to have userMetadata control this
           categories: post.tag_list,
           description: post.description,
           subtitle: userFrontMatter.subtitle
         }
-        allArticles[userFrontMatter.slug] = processedPost
+        allArticles.push(processedPost)
       }))
     } while (latestResult.length === per_page)
     return allArticles
   }
 
   async function getDataSlice(uid: string) {
-    const post = allArticles[uid];
+    const post = allArticles.find(post => post.slug === uid);
+    if (!post) throw new Error(`post ${uid} not found`)
     var post_vfile = vfile({ path: post.slug, contents: post.body_markdown });
     const file = await unified()
       .use(_preset)

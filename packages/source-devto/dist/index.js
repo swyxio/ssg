@@ -60,7 +60,7 @@ module.exports = function (opts) {
         _preset = produce(_preset, opts.modifyRemarkConfig);
     }
     const headers = { 'api-key': opts.apiKey };
-    let allArticles = {};
+    let allArticles = [];
     // flattens all directories below the dirPath
     // is recursive!
     function createIndex() {
@@ -85,12 +85,13 @@ module.exports = function (opts) {
                     let processedPost = post;
                     processedPost.metadata = {
                         title: post.title,
+                        slug: post.slug,
                         date: new Date(post.published_at),
                         categories: post.tag_list,
                         description: post.description,
                         subtitle: userFrontMatter.subtitle
                     };
-                    allArticles[userFrontMatter.slug] = processedPost;
+                    allArticles.push(processedPost);
                 })));
             } while (latestResult.length === per_page);
             return allArticles;
@@ -98,7 +99,9 @@ module.exports = function (opts) {
     }
     function getDataSlice(uid) {
         return __awaiter(this, void 0, void 0, function* () {
-            const post = allArticles[uid];
+            const post = allArticles.find(post => post.slug === uid);
+            if (!post)
+                throw new Error(`post ${uid} not found`);
             var post_vfile = vfile({ path: post.slug, contents: post.body_markdown });
             const file = yield unified()
                 .use(_preset)

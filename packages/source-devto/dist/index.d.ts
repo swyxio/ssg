@@ -65,12 +65,10 @@ declare type DevToPostProcessedType = DevToPostType & {
     userFrontMatter?: Object;
     metadata?: {
         title: string;
+        slug: string;
         date: Date;
         categories?: string[];
         description?: string;
         subtitle?: string;
     };
-};
-declare type DevToPluginSlugMap = {
-    [slug: string]: DevToPostProcessedType;
 };
