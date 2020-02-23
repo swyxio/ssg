@@ -67,6 +67,7 @@ declare type DevToPostProcessedType = DevToPostType & {
         title: string;
         slug: string;
         date: Date;
+        pubdate: Date;
         categories?: string[];
         description?: string;
         subtitle?: string;

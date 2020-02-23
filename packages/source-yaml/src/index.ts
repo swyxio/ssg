@@ -85,6 +85,7 @@ export default function SSGYamlPlugin(opts: PluginOpts) {
   async function getDataSlice(uid: string) {
     const filepath = fromb64(uid);
     const data = yaml.safeLoad(fs.readFileSync(filepath), 'utf-8');
+    // TODO: return null if not found
     return data;
   }
 

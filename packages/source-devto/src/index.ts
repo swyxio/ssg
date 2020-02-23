@@ -134,7 +134,7 @@ module.exports = function(opts: PluginOpts) {
         }
         let processedPost: DevToPostProcessedType = post
         let pubdate =
-          userFrontMatter.displayed_publishdate || post.published_at; // let user override in frontmatter
+          userFrontMatter.displayed_publish_date || post.published_at; // let user override in frontmatter
           pubdate = new Date(pubdate);
         processedPost.metadata = {
           title: post.title,
@@ -153,10 +153,7 @@ module.exports = function(opts: PluginOpts) {
 
   async function getDataSlice(uid: string) {
     const post = allArticles.find(post => post.slug === uid);
-    if (!post) {
-      throw new Error(`post ${uid} not found`)
-      // return null
-    }
+    if (!post) return null // not found
     var post_vfile = vfile({ path: post.slug, contents: post.body_markdown });
     const file = await unified()
       .use(_preset)

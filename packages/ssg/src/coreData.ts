@@ -205,7 +205,7 @@ export default function ssgCoreDataPlugin(opts?: PluginOpts) {
       item.html = file.toString();
       return item;
     } else {
-      throw new Error('no file for ' + slug + ' found');
+      return null // not found
     }
   }
 

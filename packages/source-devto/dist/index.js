@@ -83,10 +83,13 @@ module.exports = function (opts) {
                         userFrontMatter.slug = post.slug;
                     }
                     let processedPost = post;
+                    let pubdate = userFrontMatter.displayed_publishdate || post.published_at; // let user override in frontmatter
+                    pubdate = new Date(pubdate);
                     processedPost.metadata = {
                         title: post.title,
                         slug: userFrontMatter.slug,
-                        date: new Date(post.published_at),
+                        date: pubdate,
+                        pubdate: pubdate,
                         categories: post.tag_list,
                         description: post.description,
                         subtitle: userFrontMatter.subtitle
@@ -100,8 +103,10 @@ module.exports = function (opts) {
     function getDataSlice(uid) {
         return __awaiter(this, void 0, void 0, function* () {
             const post = allArticles.find(post => post.slug === uid);
-            if (!post)
+            if (!post) {
                 throw new Error(`post ${uid} not found`);
+                // return null
+            }
             var post_vfile = vfile({ path: post.slug, contents: post.body_markdown });
             const file = yield unified()
                 .use(_preset)
