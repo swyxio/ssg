@@ -56,37 +56,44 @@ type PluginOpts = {
 }
 type SSGDevToPluginPost = { uid: string; createdAt: Date; modifiedAt: Date; metadata: any }
 type DevToPostType = {
-  type_of: String, //'article',
+  type_of: string, //'article',
   id: Number, // 55238,
-  title: String, // '3 Tips from Kent C Dodds for People Just Getting Started',
-  description: String, // 'advice for beginners from a podcast',
-  cover_image: String | null, // null,
+  title: string, // '3 Tips from Kent C Dodds for People Just Getting Started',
+  description: string, // 'advice for beginners from a podcast',
+  cover_image: string | null, // null,
   published: Boolean, // true,
-  published_at: String, // '2018-10-15T23:54:50.629Z',
-  tag_list: String[], // ['advice'],
-  slug: String, // '3-tips-from-kent-c-dodds-for-people-just-getting-started-ik8',
-  path: String, // '/swyx/3-tips-from-kent-c-dodds-for-people-just-getting-started-ik8',
-  url: String, // 'https://dev.to/swyx/3-tips-from-kent-c-dodds-for-people-just-getting-started-ik8',
-  canonical_url: String, // 'https://dev.to/swyx/3-tips-from-kent-c-dodds-for-people-just-getting-started-ik8',
+  published_at: string, // '2018-10-15T23:54:50.629Z',
+  tag_list: string[], // ['advice'],
+  slug: string, // '3-tips-from-kent-c-dodds-for-people-just-getting-started-ik8',
+  path: string, // '/swyx/3-tips-from-kent-c-dodds-for-people-just-getting-started-ik8',
+  url: string, // 'https://dev.to/swyx/3-tips-from-kent-c-dodds-for-people-just-getting-started-ik8',
+  canonical_url: string, // 'https://dev.to/swyx/3-tips-from-kent-c-dodds-for-people-just-getting-started-ik8',
   comments_count: Number, // 5,
   positive_reactions_count: Number, // 39,
   page_views_count: Number, // 279,
-  published_timestamp: String, // '2018-10-15T23:54:50Z',
-  body_markdown: String, // note that it will include user written frontmatter
+  published_timestamp: string, // '2018-10-15T23:54:50Z',
+  body_markdown: string, // note that it will include user written frontmatter
   user:
   {
-    name: String, // 'shawn swyx wang 🇸🇬',
-    username: String, // 'swyx',
-    twitter_username: String, // 'swyx',
-    github_username: String | null, // null,
-    website_url: String, // 'http://swyx.io',
-    profile_image: String, // 'https://res.cloudinary.com/practicaldev/image/fetch/s--OOhJF6mC--/c_fill,f_auto,fl_progressive,h_640,q_auto,w_640/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/47766/26fbd2bf-c352-447c-9b4f-f66652dc4899.jpg',
-    profile_image_90: String, // 'https://res.cloudinary.com/practicaldev/image/fetch/s--zGW7kqpH--/c_fill,f_auto,fl_progressive,h_90,q_auto,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/47766/26fbd2bf-c352-447c-9b4f-f66652dc4899.jpg'
+    name: string, // 'shawn swyx wang 🇸🇬',
+    username: string, // 'swyx',
+    twitter_username: string, // 'swyx',
+    github_username: string | null, // null,
+    website_url: string, // 'http://swyx.io',
+    profile_image: string, // 'https://res.cloudinary.com/practicaldev/image/fetch/s--OOhJF6mC--/c_fill,f_auto,fl_progressive,h_640,q_auto,w_640/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/47766/26fbd2bf-c352-447c-9b4f-f66652dc4899.jpg',
+    profile_image_90: string, // 'https://res.cloudinary.com/practicaldev/image/fetch/s--zGW7kqpH--/c_fill,f_auto,fl_progressive,h_90,q_auto,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/47766/26fbd2bf-c352-447c-9b4f-f66652dc4899.jpg'
   }
 }
 type DevToPostProcessedType = DevToPostType & {
-  html?: String,
-  userFrontMatter?: Object
+  html?: string,
+  userFrontMatter?: Object,
+  metadata?: {
+    title: string,
+    date: Date,
+    categories?: string[],
+    description?: string,
+    subtitle?: string
+  }
 }
 type DevToPluginSlugMap = {
   [slug: string]: DevToPostProcessedType
@@ -121,12 +128,19 @@ module.exports = function(opts: PluginOpts) {
         })
       await Promise.all(latestResult.map(async post => {
         const { attributes: userFrontMatter } = frontMatter(post.body_markdown)
-        
         if (!userFrontMatter.slug) {
           // console.warn(`Warning: no slug in frontmatter for ${processedPost.slug}, adopting dev.to's slug`)
           userFrontMatter.slug = post.slug
         }
-        allArticles[userFrontMatter.slug] = post
+        let processedPost: DevToPostProcessedType = post
+        processedPost.metadata = {
+          title: post.title,
+          date: new Date(post.published_at), // may want to have userMetadata control this
+          categories: post.tag_list,
+          description: post.description,
+          subtitle: userFrontMatter.subtitle
+        }
+        allArticles[userFrontMatter.slug] = processedPost
       }))
     } while (latestResult.length === per_page)
     return allArticles
@@ -135,7 +149,6 @@ module.exports = function(opts: PluginOpts) {
   async function getDataSlice(uid: string) {
     const post = allArticles[uid];
     var post_vfile = vfile({ path: post.slug, contents: post.body_markdown });
-    // doing work upfront for now, may have to defer for high volume work in future
     const file = await unified()
       .use(_preset)
       .process(post_vfile)

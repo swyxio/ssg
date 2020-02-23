@@ -82,7 +82,15 @@ module.exports = function (opts) {
                         // console.warn(`Warning: no slug in frontmatter for ${processedPost.slug}, adopting dev.to's slug`)
                         userFrontMatter.slug = post.slug;
                     }
-                    allArticles[userFrontMatter.slug] = post;
+                    let processedPost = post;
+                    processedPost.metadata = {
+                        title: post.title,
+                        date: new Date(post.published_at),
+                        categories: post.tag_list,
+                        description: post.description,
+                        subtitle: userFrontMatter.subtitle
+                    };
+                    allArticles[userFrontMatter.slug] = processedPost;
                 })));
             } while (latestResult.length === per_page);
             return allArticles;
@@ -92,7 +100,6 @@ module.exports = function (opts) {
         return __awaiter(this, void 0, void 0, function* () {
             const post = allArticles[uid];
             var post_vfile = vfile({ path: post.slug, contents: post.body_markdown });
-            // doing work upfront for now, may have to defer for high volume work in future
             const file = yield unified()
                 .use(_preset)
                 .process(post_vfile)

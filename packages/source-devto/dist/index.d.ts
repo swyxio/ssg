@@ -33,36 +33,43 @@ declare type SSGDevToPluginPost = {
     metadata: any;
 };
 declare type DevToPostType = {
-    type_of: String;
+    type_of: string;
     id: Number;
-    title: String;
-    description: String;
-    cover_image: String | null;
+    title: string;
+    description: string;
+    cover_image: string | null;
     published: Boolean;
-    published_at: String;
-    tag_list: String[];
-    slug: String;
-    path: String;
-    url: String;
-    canonical_url: String;
+    published_at: string;
+    tag_list: string[];
+    slug: string;
+    path: string;
+    url: string;
+    canonical_url: string;
     comments_count: Number;
     positive_reactions_count: Number;
     page_views_count: Number;
-    published_timestamp: String;
-    body_markdown: String;
+    published_timestamp: string;
+    body_markdown: string;
     user: {
-        name: String;
-        username: String;
-        twitter_username: String;
-        github_username: String | null;
-        website_url: String;
-        profile_image: String;
-        profile_image_90: String;
+        name: string;
+        username: string;
+        twitter_username: string;
+        github_username: string | null;
+        website_url: string;
+        profile_image: string;
+        profile_image_90: string;
     };
 };
 declare type DevToPostProcessedType = DevToPostType & {
-    html?: String;
+    html?: string;
     userFrontMatter?: Object;
+    metadata?: {
+        title: string;
+        date: Date;
+        categories?: string[];
+        description?: string;
+        subtitle?: string;
+    };
 };
 declare type DevToPluginSlugMap = {
     [slug: string]: DevToPostProcessedType;
