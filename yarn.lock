@@ -600,10 +600,10 @@
     escape-string-regexp "^1.0.5"
     lodash.deburr "^4.1.0"
 
-"@ssgjs/sapper@^0.27.9-fork.17":
-  version "0.27.9-fork.17"
-  resolved "https://registry.yarnpkg.com/@ssgjs/sapper/-/sapper-0.27.9-fork.17.tgz#ab96fd1723ce75c1d964f8d51a4ff4a7a6684ab7"
-  integrity sha512-mc6SxADM65wRN6sn/td1QDcB3uYLc8FMTNhlx+e61hix5BdBPC7bWpYYDo+K5pJXYoWO6i6X0OW1OpVOSa/RtQ==
+"@ssgjs/sapper@^0.27.9-fork.18":
+  version "0.27.9-fork.18"
+  resolved "https://registry.yarnpkg.com/@ssgjs/sapper/-/sapper-0.27.9-fork.18.tgz#471eb9213906b9b4c9557fed2f38273e4904eb45"
+  integrity sha512-92a9n47VBT1h5hZNcy4/DuNbKREZcL/Kqh7t0lbkEtb9Z4AEMo0QlgPeDSR78lhqtkxwLqNR4JYAbkj/LABhcg==
   dependencies:
     "@babel/core" "^7.6.2"
     compression "^1.7.4"
@@ -2180,6 +2180,7 @@ no-case@^2.2.0:
 node-fetch@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
+  integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
 
 node-modules-regexp@^1.0.0:
   version "1.0.0"
@@ -3610,6 +3611,17 @@ vfile-statistics@^1.1.0:
 vfile@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/vfile/-/vfile-4.0.1.tgz#fc3d43a1c71916034216bf65926d5ee3c64ed60c"
+  dependencies:
+    "@types/unist" "^2.0.0"
+    is-buffer "^2.0.0"
+    replace-ext "1.0.0"
+    unist-util-stringify-position "^2.0.0"
+    vfile-message "^2.0.0"
+
+vfile@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/vfile/-/vfile-4.0.2.tgz#71af004d4a710b0e6be99c894655bc56126d5d56"
+  integrity sha512-yhoTU5cDMSsaeaMfJ5g0bUKYkYmZhAh9fn9TZicxqn+Cw4Z439il2v3oT9S0yjlpqlI74aFOQCt3nOV+pxzlkw==
   dependencies:
     "@types/unist" "^2.0.0"
     is-buffer "^2.0.0"
