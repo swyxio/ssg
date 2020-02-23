@@ -91,6 +91,7 @@ type DevToPostProcessedType = DevToPostType & {
     title: string,
     slug: string,
     date: Date,
+    pubdate: Date,
     categories?: string[],
     description?: string,
     subtitle?: string
@@ -132,14 +133,18 @@ module.exports = function(opts: PluginOpts) {
           userFrontMatter.slug = post.slug
         }
         let processedPost: DevToPostProcessedType = post
+        let pubdate =
+          userFrontMatter.displayed_publishdate || post.published_at; // let user override in frontmatter
+          pubdate = new Date(pubdate);
         processedPost.metadata = {
           title: post.title,
-          slug: post.slug,
-          date: new Date(post.published_at), // may want to have userMetadata control this
+          slug: userFrontMatter.slug,
+          date: pubdate,
+          pubdate: pubdate,
           categories: post.tag_list,
           description: post.description,
           subtitle: userFrontMatter.subtitle
-        }
+        };
         allArticles.push(processedPost)
       }))
     } while (latestResult.length === per_page)
@@ -148,7 +153,10 @@ module.exports = function(opts: PluginOpts) {
 
   async function getDataSlice(uid: string) {
     const post = allArticles.find(post => post.slug === uid);
-    if (!post) throw new Error(`post ${uid} not found`)
+    if (!post) {
+      throw new Error(`post ${uid} not found`)
+      // return null
+    }
     var post_vfile = vfile({ path: post.slug, contents: post.body_markdown });
     const file = await unified()
       .use(_preset)

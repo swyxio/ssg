@@ -85,7 +85,7 @@ module.exports = function (opts) {
                     let processedPost = post;
                     processedPost.metadata = {
                         title: post.title,
-                        slug: post.slug,
+                        slug: userFrontMatter.slug,
                         date: new Date(post.published_at),
                         categories: post.tag_list,
                         description: post.description,
