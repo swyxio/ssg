@@ -23,6 +23,12 @@ However the conversations I have daily at work always bother me and make me wish
 
 I am not at all optimistic this will ever be a wise venture so this is literally for shits n giggles until someone more serious than me picks this up. Because I'm not serious about it, it has an even higher chance of failure than the abysmal chance it had :(. at least i hope somebody else comes along and picks this up.
 
+## Other attempts at a Svelte Site Generator
+
+- Sapper
+- https://github.com/jakedeichert/svelvet/issues/31
+- https://github.com/PKlknr/svatic
+
 ## SSG v0
 
 whatever i have now, the Sapper-based slow monstrosity. I can add:
