@@ -32,6 +32,7 @@
     "kleur": "^3.0.3",
     "pretty-bytes": "^5.3.0",
     "rehype-format": "^3.0.0",
+    "rehype-raw": "^4.0.2",
     "rehype-shiki": "^0.0.5",
     "rehype-slug": "^2.0.3",
     "rehype-stringify": "^6.0.0",
