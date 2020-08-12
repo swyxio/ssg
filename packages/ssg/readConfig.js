@@ -25,8 +25,8 @@ const getIndex = () => {
 let getDataSlice = async (key, uid) => {
   const plugins = ssgConfig.plugins;
   const coreDataPlugin = coreData(ssgConfig.coreDataOpts);
+  const allIndex = getIndex()
   coreDataPlugin.loadIndex(() => {
-    const allIndex = getIndex();
     return allIndex.ssgCoreData;
   });
   if (key === 'ssgCoreData') {
@@ -35,7 +35,7 @@ let getDataSlice = async (key, uid) => {
   }
   if (plugins) {
     if (plugins[key]) {
-      return plugins[key].getDataSlice(uid, coreDataPlugin);
+      return plugins[key].getDataSlice(uid, coreDataPlugin, allIndex[key]);
     }
   }
   if (ssgConfig.getDataSlice) {
