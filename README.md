@@ -1,4 +1,14 @@
-# SSG
+# Aug 2020 Update - This is now a deprecated project
+
+I was planning to do a rewrite round about now, but there are enough people working on the static sites problem in Svelte that I don't wish to contribute to the noise. Please check out these other projects.
+
+- https://elderguide.com/tech/elderjs/
+- https://github.com/junglejs/junglejs
+- more on the way
+
+I will be exploring moving swyx.io to one of these projects to support them.
+
+---
 
 ## Why SSG?
 
